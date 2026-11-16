@@ -17,7 +17,7 @@
     "collaborative-filtering",
     "library-management"
   ],
-  "author": "Kaneeshkumar G K, Kaustubh Nadiger, Neville Richard Smith (RIT CSE)",
+  "author": "Department of Computer Science & Engineering, RIT",
   "license": "MIT",
   "dependencies": {
     "cors": "^2.8.5",

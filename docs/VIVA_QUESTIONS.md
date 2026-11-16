@@ -3,7 +3,7 @@
 **Course:** CSAEC59: AEC-NoSQL  
 **Department:** Computer Science & Engineering, Ramaiah Institute of Technology  
 **Project:** BookGraph - Library Book Recommendation System using Neo4j  
-**Students:** Kaneeshkumar G K (1MS24CS075), Kaustubh Nadiger (1MS24CS080), Neville Richard Smith (1MS24CS109)  
+**Technology:** Neo4j Graph Database & Cypher  
 
 ---
 

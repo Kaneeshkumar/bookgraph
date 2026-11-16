@@ -39,11 +39,11 @@ MERGE (a17:Author {id: 'AUT17'}) ON CREATE SET a17.name = 'Aditya Bhargava', a17
 MERGE (a18:Author {id: 'AUT18'}) ON CREATE SET a18.name = 'Kyle Simpson', a18.country = 'USA';
 
 // ------------------------------------------------------------------------------
-// 3. STUDENTS (Including Project Team from RIT CSE)
+// 3. STUDENTS
 // ------------------------------------------------------------------------------
-MERGE (s01:Student {usn: '1MS24CS075'}) ON CREATE SET s01.name = 'Kaneeshkumar G K', s01.branch = 'CSE', s01.sem = 5, s01.email = 'kaneesh@msrit.edu'
-MERGE (s02:Student {usn: '1MS24CS080'}) ON CREATE SET s02.name = 'Kaustubh Nadiger', s02.branch = 'CSE', s02.sem = 5, s02.email = 'kaustubh@msrit.edu'
-MERGE (s03:Student {usn: '1MS24CS109'}) ON CREATE SET s03.name = 'Neville Richard Smith', s03.branch = 'CSE', s03.sem = 5, s03.email = 'neville@msrit.edu'
+MERGE (s01:Student {usn: '1MS24CS075'}) ON CREATE SET s01.name = 'Aarav Sharma', s01.branch = 'CSE', s01.sem = 5, s01.email = 'aarav@msrit.edu'
+MERGE (s02:Student {usn: '1MS24CS080'}) ON CREATE SET s02.name = 'Karan Mehta', s02.branch = 'CSE', s02.sem = 5, s02.email = 'karan@msrit.edu'
+MERGE (s03:Student {usn: '1MS24CS109'}) ON CREATE SET s03.name = 'Kavya Rao', s03.branch = 'CSE', s03.sem = 5, s03.email = 'kavya@msrit.edu'
 MERGE (s04:Student {usn: '1MS24CS012'}) ON CREATE SET s04.name = 'Ananya Sharma', s04.branch = 'CSE', s04.sem = 5, s04.email = 'ananya@msrit.edu'
 MERGE (s05:Student {usn: '1MS24CS095'}) ON CREATE SET s05.name = 'Rohan Verma', s05.branch = 'CSE', s05.sem = 5, s05.email = 'rohan@msrit.edu'
 MERGE (s06:Student {usn: '1MS24CS088'}) ON CREATE SET s06.name = 'Priya Nair', s06.branch = 'CSE', s06.sem = 5, s06.email = 'priya@msrit.edu'
@@ -188,7 +188,7 @@ MERGE (b25)-[:BELONGS_TO]->(:Genre {id: 'GEN03'});
 // 5. BORROWING HISTORY (Student -[:BORROWED]-> Book)
 // ------------------------------------------------------------------------------
 
-// Kaneeshkumar G K (1MS24CS075) - Reads Distributed Systems, Clean Code, Algorithms
+// Student 1 (1MS24CS075) - Reads Distributed Systems, Clean Code, Algorithms
 MERGE (s01:Student {usn: '1MS24CS075'})
 MERGE (b01:Book {id: 'BK01'})
 MERGE (s01)-[:BORROWED {borrow_date: '2026-08-10', return_date: '2026-08-25', status: 'RETURNED'}]->(b01);
@@ -205,7 +205,7 @@ MERGE (s01:Student {usn: '1MS24CS075'})
 MERGE (b04:Book {id: 'BK04'})
 MERGE (s01)-[:BORROWED {borrow_date: '2026-11-01', return_date: '2026-11-20', status: 'ACTIVE'}]->(b04);
 
-// Kaustubh Nadiger (1MS24CS080) - Overlaps with Kaneesh on BK01, BK02; also read BK03 (Clean Arch), BK24 (Dist Systems), BK18
+// Student 2 (1MS24CS080) - Overlaps with Student 1 on BK01, BK02; also read BK03 (Clean Arch), BK24 (Dist Systems), BK18
 MERGE (s02:Student {usn: '1MS24CS080'})
 MERGE (b01:Book {id: 'BK01'})
 MERGE (s02)-[:BORROWED {borrow_date: '2026-08-15', return_date: '2026-08-30', status: 'RETURNED'}]->(b01);
@@ -226,7 +226,7 @@ MERGE (s02:Student {usn: '1MS24CS080'})
 MERGE (b18:Book {id: 'BK18'})
 MERGE (s02)-[:BORROWED {borrow_date: '2026-11-02', return_date: '2026-11-19', status: 'ACTIVE'}]->(b18);
 
-// Neville Richard Smith (1MS24CS109) - Overlaps with Kaneesh & Kaustubh on BK01, BK04; also read BK21 (Clean Coder), BK05 (AI), BK13 (DB Concepts)
+// Student 3 (1MS24CS109) - Overlaps with Student 1 & 2 on BK01, BK04; also read BK21 (Clean Coder), BK05 (AI), BK13 (DB Concepts)
 MERGE (s03:Student {usn: '1MS24CS109'})
 MERGE (b01:Book {id: 'BK01'})
 MERGE (s03)-[:BORROWED {borrow_date: '2026-08-20', return_date: '2026-09-05', status: 'RETURNED'}]->(b01);

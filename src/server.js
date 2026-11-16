@@ -36,8 +36,7 @@ async function startServer() {
   console.log('================================================================');
   console.log('  BookGraph: Library Book Recommendation System (Neo4j)');
   console.log('  Department of Computer Science & Engineering, RIT Bangalore');
-  console.log('  Developed by: Kaneeshkumar G K, Kaustubh Nadiger, Neville Smith');
-  console.log('  Guidance: Prof. Akshatha Kamath');
+  console.log('  Course: CSAEC59: AEC-NoSQL (20-Mark Component)');
   console.log('================================================================');
 
   await initNeo4j();

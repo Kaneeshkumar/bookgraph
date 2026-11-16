@@ -18,12 +18,7 @@ router.get('/status', (req, res) => {
     system: 'BookGraph - Library Recommendation Platform',
     institution: 'Ramaiah Institute of Technology (RIT)',
     department: 'Computer Science & Engineering',
-    team: [
-      { name: 'Kaneeshkumar G K', usn: '1MS24CS075' },
-      { name: 'Kaustubh Nadiger', usn: '1MS24CS080' },
-      { name: 'Neville Richard Smith', usn: '1MS24CS109' }
-    ],
-    guide: 'Akshatha Kamath',
+    course: 'CSAEC59: AEC-NoSQL (20-Mark Component)',
     databaseStatus: getConnectionStatus()
   });
 });

@@ -36,9 +36,9 @@ const authors = [
 ];
 
 const students = [
-  { usn: '1MS24CS075', name: 'Kaneeshkumar G K', branch: 'CSE', sem: 5, email: 'kaneesh@msrit.edu' },
-  { usn: '1MS24CS080', name: 'Kaustubh Nadiger', branch: 'CSE', sem: 5, email: 'kaustubh@msrit.edu' },
-  { usn: '1MS24CS109', name: 'Neville Richard Smith', branch: 'CSE', sem: 5, email: 'neville@msrit.edu' },
+  { usn: '1MS24CS075', name: 'Aarav Sharma', branch: 'CSE', sem: 5, email: 'aarav@msrit.edu' },
+  { usn: '1MS24CS080', name: 'Karan Mehta', branch: 'CSE', sem: 5, email: 'karan@msrit.edu' },
+  { usn: '1MS24CS109', name: 'Kavya Rao', branch: 'CSE', sem: 5, email: 'kavya@msrit.edu' },
   { usn: '1MS24CS012', name: 'Ananya Sharma', branch: 'CSE', sem: 5, email: 'ananya@msrit.edu' },
   { usn: '1MS24CS095', name: 'Rohan Verma', branch: 'CSE', sem: 5, email: 'rohan@msrit.edu' },
   { usn: '1MS24CS088', name: 'Priya Nair', branch: 'CSE', sem: 5, email: 'priya@msrit.edu' },
@@ -79,20 +79,20 @@ const books = [
 ];
 
 let borrowed = [
-  // Kaneeshkumar (1MS24CS075)
+  // Student 1 (1MS24CS075)
   { studentUsn: '1MS24CS075', bookId: 'BK01', borrow_date: '2026-08-10', return_date: '2026-08-25', status: 'RETURNED' },
   { studentUsn: '1MS24CS075', bookId: 'BK02', borrow_date: '2026-09-02', return_date: '2026-09-18', status: 'RETURNED' },
   { studentUsn: '1MS24CS075', bookId: 'BK15', borrow_date: '2026-10-01', return_date: '2026-10-15', status: 'RETURNED' },
   { studentUsn: '1MS24CS075', bookId: 'BK04', borrow_date: '2026-11-01', return_date: '2026-11-20', status: 'ACTIVE' },
 
-  // Kaustubh (1MS24CS080)
+  // Student 2 (1MS24CS080)
   { studentUsn: '1MS24CS080', bookId: 'BK01', borrow_date: '2026-08-15', return_date: '2026-08-30', status: 'RETURNED' },
   { studentUsn: '1MS24CS080', bookId: 'BK02', borrow_date: '2026-09-05', return_date: '2026-09-20', status: 'RETURNED' },
   { studentUsn: '1MS24CS080', bookId: 'BK03', borrow_date: '2026-09-25', return_date: '2026-10-10', status: 'RETURNED' },
   { studentUsn: '1MS24CS080', bookId: 'BK24', borrow_date: '2026-10-12', return_date: '2026-10-28', status: 'RETURNED' },
   { studentUsn: '1MS24CS080', bookId: 'BK18', borrow_date: '2026-11-02', return_date: '2026-11-19', status: 'ACTIVE' },
 
-  // Neville (1MS24CS109)
+  // Student 3 (1MS24CS109)
   { studentUsn: '1MS24CS109', bookId: 'BK01', borrow_date: '2026-08-20', return_date: '2026-09-05', status: 'RETURNED' },
   { studentUsn: '1MS24CS109', bookId: 'BK04', borrow_date: '2026-09-10', return_date: '2026-09-26', status: 'RETURNED' },
   { studentUsn: '1MS24CS109', bookId: 'BK21', borrow_date: '2026-10-02', return_date: '2026-10-18', status: 'RETURNED' },

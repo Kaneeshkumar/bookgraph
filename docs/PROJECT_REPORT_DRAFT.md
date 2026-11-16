@@ -11,16 +11,7 @@
 **Course Code & Name:** CSAEC59: AEC-NoSQL (20-Mark Component)  
 **Academic Period:** August – December 2026  
 
-#### **Student Contributors:**
-| Name | USN | Department |
-| :--- | :--- | :--- |
-| **Kaneeshkumar G K** | 1MS24CS075 | Computer Science & Engineering |
-| **Kaustubh Nadiger** | 1MS24CS080 | Computer Science & Engineering |
-| **Neville Richard Smith** | 1MS24CS109 | Computer Science & Engineering |
-
-#### **Faculty Guide:**
-**Prof. Akshatha Kamath**  
-Department of Computer Science & Engineering  
+#### **Department of Computer Science & Engineering**
 Ramaiah Institute of Technology, Bangalore  
 
 ---
@@ -60,7 +51,7 @@ There is a distinct requirement for a graph database solution that natively enco
 ### 4.1 Node Labels & Properties
 1. **`Student`**:
    - `usn` (Primary Key, Unique Constraint, e.g. `'1MS24CS075'`)
-   - `name` (String, e.g. `'Kaneeshkumar G K'`)
+   - `name` (String, e.g. `'Aarav Sharma'`)
    - `branch` (String, e.g. `'CSE'`)
    - `sem` (Integer, e.g. `5`)
    - `email` (String)

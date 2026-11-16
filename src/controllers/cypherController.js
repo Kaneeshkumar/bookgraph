@@ -27,7 +27,7 @@ LIMIT 5;`
     id: 'collaborative-rec',
     title: 'Collaborative Filtering Recommendation',
     category: 'Recommendations',
-    description: 'Finds students who borrowed the same books as Kaneeshkumar (1MS24CS075), and suggests books those students borrowed.',
+    description: 'Finds students who borrowed the same books as Student 1 (1MS24CS075), and suggests books those students borrowed.',
     cypher: `MATCH (me:Student {usn: '1MS24CS075'})-[:BORROWED]->(shared:Book)<-[:BORROWED]-(peer:Student)
 WHERE me <> peer
 MATCH (peer)-[:BORROWED]->(rec:Book)
@@ -88,8 +88,8 @@ ORDER BY TotalBooksBorrowed DESC
 LIMIT 5;`
   },
   {
-    id: 'books-by-kaneesh',
-    title: 'Borrow History for Kaneeshkumar G K',
+    id: 'books-by-student',
+    title: 'Borrow History for Student (1MS24CS075)',
     category: 'Queries',
     description: 'Traverses direct outgoing [:BORROWED] relationships from student node to books.',
     cypher: `MATCH (s:Student {usn: '1MS24CS075'})-[rel:BORROWED]->(b:Book)
@@ -171,7 +171,7 @@ async function runCypher(req, res) {
         })
         .sort((a, b) => b.TotalBooksBorrowed - a.TotalBooksBorrowed)
         .slice(0, 5);
-    } else if (queryId === 'books-by-kaneesh' || cypherToRun.includes('1MS24CS075')) {
+    } else if (queryId === 'books-by-student' || cypherToRun.includes('1MS24CS075')) {
       results = mockData.borrowed
         .filter(b => b.studentUsn === '1MS24CS075')
         .map(brw => {
@@ -191,9 +191,9 @@ async function runCypher(req, res) {
       results = [
         {
           PathSequence: [
-            'Kaneeshkumar G K',
+            'Aarav Sharma',
             'Designing Data-Intensive Applications',
-            'Kaustubh Nadiger',
+            'Karan Mehta',
             'Artificial Intelligence: A Modern Approach',
             'Sneha Patel'
           ],

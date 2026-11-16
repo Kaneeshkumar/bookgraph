@@ -8,16 +8,6 @@
 
 ---
 
-### **Project Team**
-| Student Name | USN | Branch | Role |
-| :--- | :--- | :--- | :--- |
-| **Kaneeshkumar G K** | 1MS24CS075 | CSE, Sem 5 | Graph Data Modeling & Collaborative Engine |
-| **Kaustubh Nadiger** | 1MS24CS080 | CSE, Sem 5 | Cypher Query Optimization & Backend API |
-| **Neville Richard Smith** | 1MS24CS109 | CSE, Sem 5 | Graph Visualization & UI Development |
-
-**Under the Guidance of:**  
-**Prof. Akshatha Kamath**, Assistant Professor, Department of Computer Science & Engineering, Ramaiah Institute of Technology
-
 ---
 
 ## 🌟 Key Highlights

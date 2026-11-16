@@ -75,6 +75,6 @@ If you prefer to run queries directly inside Neo4j Browser (`http://localhost:74
 
 ## Verification
 - Visit [http://localhost:3000](http://localhost:3000)
-- Navigate to **Recommendation Engine** tab, select **Kaneeshkumar G K (1MS24CS075)**, and click **Compute Recommendations**.
+- Navigate to **Recommendation Engine** tab, select **Aarav Sharma (1MS24CS075)**, and click **Compute Recommendations**.
 - Switch to the **Cypher Query Lab** and execute `Collaborative Filtering Recommendation`.
 - Switch to the **Graph Visualizer** to interact with the 2D physics network!

@@ -131,7 +131,7 @@ async function loadStudents() {
 
     let optionsHtml = '';
     studentsList.forEach(s => {
-      // Default to Kaneeshkumar G K (1MS24CS075)
+      // Default to student 1MS24CS075
       const selected = s.usn === '1MS24CS075' ? 'selected' : '';
       optionsHtml += `<option value="${s.usn}" ${selected}>${s.name} (${s.usn})</option>`;
     });

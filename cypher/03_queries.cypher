@@ -8,7 +8,7 @@
 // PART 1: CORE / BASIC LIBRARY QUERIES
 // ==============================================================================
 
-// 1.1 List all books borrowed by a specific student (e.g. Kaneeshkumar G K)
+// 1.1 List all books borrowed by a specific student (e.g. Student 1MS24CS075)
 // Parameters: $usn = '1MS24CS075'
 MATCH (s:Student {usn: '1MS24CS075'})-[rel:BORROWED]->(b:Book)
 OPTIONAL MATCH (b)-[:WRITTEN_BY]->(a:Author)
@@ -60,7 +60,7 @@ LIMIT 5;
 // 2.1 Collaborative Filtering Recommendation
 // Logic: (Student A) -> (Shared Book) <- (Peer Student) -> (Recommended Book)
 // Where Student A has NOT yet borrowed the Recommended Book.
-// Parameter: $usn = '1MS24CS075' (Kaneeshkumar)
+// Parameter: $usn = '1MS24CS075'
 MATCH (me:Student {usn: '1MS24CS075'})-[:BORROWED]->(shared:Book)<-[:BORROWED]-(peer:Student)
 WHERE me <> peer
 MATCH (peer)-[:BORROWED]->(rec:Book)
@@ -137,7 +137,7 @@ LIMIT 5;
 // ==============================================================================
 
 // 3.1 Degrees of Reading / Shortest Path Between Two Students
-// Finds how Kaneeshkumar (1MS24CS075) and Sneha Patel (1MS24CS112) are connected via shared books.
+// Finds how Student 1 (1MS24CS075) and Sneha Patel (1MS24CS112) are connected via shared books.
 MATCH p = shortestPath(
   (s1:Student {usn: '1MS24CS075'})-[:BORROWED*]-(s2:Student {usn: '1MS24CS112'})
 )
