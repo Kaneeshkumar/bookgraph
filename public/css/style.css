@@ -1,0 +1,81 @@
+/* ==============================================================================
+   BookGraph - Custom Styles
+   ============================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --primary: #1e3a8a;
+  --secondary: #0284c7;
+  --accent: #10b981;
+  --dark: #0f172a;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+code, pre, .font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Vis.js Canvas Container */
+#network-container {
+  width: 100%;
+  height: 620px;
+  background: radial-gradient(circle, #f8fafc 10%, #e2e8f0 100%);
+  border-radius: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glassmorphism panels */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+/* Node Legend Pill */
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.legend-square {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Pulse animation for active loans */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.pulse-badge {
+  animation: soft-pulse 2s infinite ease-in-out;
+}

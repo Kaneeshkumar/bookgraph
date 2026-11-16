@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookGraph - Library Recommendation System (Neo4j)</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Vis.js Network -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- TOP HEADER & BRANDING -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- RIT Crest & Title -->
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 bg-gradient-to-br from-red-700 via-rose-800 to-amber-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md border border-red-800">
+            RIT
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg font-black text-slate-900 tracking-tight">BookGraph</h1>
+              <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Neo4j Graph DB</span>
+              <span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2 py-0.5 rounded-full">CSAEC59: AEC-NoSQL</span>
+            </div>
+            <p class="text-xs text-slate-500 font-medium">
+              Ramaiah Institute of Technology • Dept. of Computer Science & Engineering
+            </p>
+          </div>
+        </div>
+
+        <!-- Team Credits & Status -->
+        <div class="hidden md:flex items-center gap-6">
+          <div class="text-right text-xs">
+            <p class="font-bold text-slate-800">Kaneeshkumar G K • Kaustubh Nadiger • Neville Smith</p>
+            <p class="text-slate-500">Under Guidance of: <span class="font-semibold text-slate-700">Prof. Akshatha Kamath</span></p>
+          </div>
+          <div id="db-status-pill" class="flex items-center px-3 py-1 bg-slate-100 border border-slate-200 rounded-full">
+            <span class="inline-block w-2.5 h-2.5 bg-slate-400 rounded-full mr-2"></span>
+            <span class="text-xs text-slate-600">Checking DB...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN NAVIGATION TABS -->
+      <nav class="flex space-x-1 border-t border-slate-100 py-2.5">
+        <a href="#graph" data-target="graph" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-circle-nodes text-sm"></i>
+          <span>Graph Visualizer</span>
+        </a>
+        <a href="#recommend" data-target="recommend" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+          <span>Recommendation Engine</span>
+        </a>
+        <a href="#cypher" data-target="cypher" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-terminal text-sm"></i>
+          <span>Cypher Query Lab</span>
+        </a>
+        <a href="#catalog" data-target="catalog" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-book text-sm"></i>
+          <span>Library Catalog</span>
+        </a>
+        <a href="#docs" data-target="docs" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-sm"></i>
+          <span>Report & Viva Prep</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: INTERACTIVE GRAPH VISUALIZER -->
+    <!-- ========================================================================= -->
+    <div id="view-graph" class="tab-view space-y-4">
+      <!-- KPI Header Metrics -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div>
+            <div id="stat-students" class="text-xl font-black text-slate-900">--</div>
+            <div class="text-xs text-slate-500">Students Enrolled</div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <div>
+            <div id="stat-books" class="text-xl font-black text-slate-900">--</div>
+            <div class="text-xs text-slate-500">Books Cataloged</div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-shapes"></i>
+          </div>
+          <div>
+            <div id="stat-nodes" class="text-xl font-black text-slate-900">--</div>
+            <div class="text-xs text-slate-500">Total Graph Nodes</div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-share-nodes"></i>
+          </div>
+          <div>
+            <div id="stat-edges" class="text-xl font-black text-slate-900">--</div>
+            <div class="text-xs text-slate-500">Graph Relationships</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graph Toolbar & Legend -->
+      <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <!-- Legend -->
+        <div class="flex items-center gap-4 text-xs font-medium">
+          <span class="flex items-center"><span class="legend-dot bg-blue-500"></span>Student</span>
+          <span class="flex items-center"><span class="legend-square bg-emerald-500"></span>Book</span>
+          <span class="flex items-center"><span class="legend-dot bg-amber-500"></span>Author</span>
+          <span class="flex items-center"><span class="legend-dot bg-purple-500"></span>Genre</span>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Filter by Student Ego Network -->
+          <div class="flex items-center gap-1.5">
+            <label class="text-xs text-slate-500 font-medium">Ego Network:</label>
+            <select id="filter-student-ego" onchange="filterGraph('all', this.value)" class="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option value="all">Entire Campus Graph</option>
+            </select>
+          </div>
+
+          <!-- Filter by Node Type -->
+          <select id="filter-node-type" onchange="filterGraph(this.value, document.getElementById('filter-student-ego').value)" class="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="all">All Node Types</option>
+            <option value="student">Students Only</option>
+            <option value="book">Books Only</option>
+            <option value="author">Authors Only</option>
+            <option value="genre">Genres Only</option>
+          </select>
+
+          <!-- Graph Controls -->
+          <button onclick="resetGraphView()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition" title="Fit to Screen">
+            <i class="fa-solid fa-expand mr-1"></i> Fit
+          </button>
+          <button onclick="togglePhysics(true)" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition" title="Re-simulate Physics">
+            <i class="fa-solid fa-play mr-1"></i> Physics
+          </button>
+        </div>
+      </div>
+
+      <!-- Graph Canvas Container -->
+      <div class="relative border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-slate-100">
+        <div id="graph-loader" class="absolute top-4 left-4 z-10 text-xs bg-white/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-200 font-medium text-slate-600 shadow-sm">
+          Loading graph layout...
+        </div>
+
+        <div id="network-container"></div>
+
+        <!-- Node Inspector Floating Panel -->
+        <div id="node-inspector" class="hidden absolute top-4 right-4 z-20 w-80 glass-panel p-4 rounded-xl shadow-lg border border-slate-200">
+          <div class="flex items-start justify-between mb-2">
+            <div>
+              <span id="inspector-type" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">Node</span>
+              <h3 id="inspector-title" class="text-sm font-bold text-slate-800 mt-1 leading-snug">Node Title</h3>
+            </div>
+            <button onclick="hideNodeInspector()" class="text-slate-400 hover:text-slate-600 text-sm">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="text-xs text-slate-500 mb-2" id="inspector-connections">0 relationships</div>
+          <div id="inspector-details" class="text-xs text-slate-700 bg-slate-50 p-2.5 rounded-lg border border-slate-100 leading-relaxed font-mono">
+            Details will appear here.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: RECOMMENDATION ENGINE -->
+    <!-- ========================================================================= -->
+    <div id="view-recommend" class="tab-view hidden space-y-6">
+      <!-- Selector Card -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Graph-Powered Recommendation Simulator</h2>
+            <p class="text-xs text-slate-500">Traverse student borrowing habits, authors, and genres through Neo4j graph relationships.</p>
+          </div>
+          <span id="rec-algo-badge" class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+            Collaborative Filtering
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Student Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Target Student:</label>
+            <select id="rec-student-select" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+
+          <!-- Algorithm Selector -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Recommendation Algorithm:</label>
+            <select id="rec-algo-select" onchange="onAlgoChange(this.value)" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+              <option value="collaborative">1. Collaborative Filtering (Peer Borrowing Traversal)</option>
+              <option value="content">2. Content-Based (Top Genre & Author Affinity)</option>
+              <option value="hybrid">3. Hybrid Quality (Peer Support + 5★ Ratings)</option>
+              <option value="degrees">4. Degrees of Reading (Shortest Path Between Students)</option>
+            </select>
+          </div>
+
+          <!-- Run Button -->
+          <div class="flex items-end">
+            <button onclick="generateRecommendations()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-2 shadow-sm">
+              <i class="fa-solid fa-play"></i> Compute Recommendations
+            </button>
+          </div>
+        </div>
+
+        <!-- Degrees of Reading Secondary Selectors (Initially Hidden) -->
+        <div id="degrees-selectors" class="hidden mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Student 1 (Source):</label>
+            <select id="path-student-1" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Student 2 (Target):</label>
+            <select id="path-student-2" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommendation Results Grid -->
+      <div>
+        <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-sparkles text-amber-500"></i> Recommended Books For Student
+        </h3>
+        <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Behind the Scenes: Cypher Execution Query Box -->
+      <div class="bg-slate-900 rounded-xl p-5 text-white shadow-sm border border-slate-800">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-code text-blue-400"></i>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-300">Under the Hood: Cypher Graph Traversal Query</span>
+          </div>
+          <span class="text-[10px] text-slate-400 font-mono">Neo4j Cypher Execution</span>
+        </div>
+        <pre id="rec-cypher-code" class="text-xs font-mono text-emerald-400 overflow-x-auto p-3 bg-slate-950 rounded-lg border border-slate-800">
+// Cypher query will appear here...
+        </pre>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: CYPHER QUERY LAB -->
+    <!-- ========================================================================= -->
+    <div id="view-cypher" class="tab-view hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Predefined Syllabus Queries List -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+          <h3 class="text-sm font-bold text-slate-900 mb-1">Predefined Academic Queries</h3>
+          <p class="text-xs text-slate-500 mb-4">Click any query from the CSAEC59 syllabus to load into the console.</p>
+          <div id="predefined-queries-list" class="space-y-2">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Cypher Editor & Console -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-blue-600"></i> Cypher Query Console
+              </span>
+              <button onclick="executeCypherQuery()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-bolt"></i> Execute Query
+              </button>
+            </div>
+
+            <textarea id="cypher-editor" rows="6" class="w-full text-xs font-mono p-3 bg-slate-950 text-emerald-400 rounded-lg border border-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500 leading-relaxed"></textarea>
+
+            <!-- Execution Metrics -->
+            <div class="flex items-center justify-between text-[11px] text-slate-500 pt-3 border-t border-slate-100">
+              <div>Execution Time: <span id="cypher-execution-time" class="font-bold text-slate-700 font-mono">--</span></div>
+              <div>Returned: <span id="cypher-record-count" class="font-bold text-slate-700 font-mono">--</span></div>
+              <div>Mode: <span id="cypher-engine-mode" class="font-bold text-blue-700 font-mono">--</span></div>
+            </div>
+          </div>
+
+          <!-- Query Results Viewport -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-700">
+              Query Result Set
+            </div>
+            <div id="cypher-results" class="p-4">
+              <p class="text-xs text-slate-400 text-center py-6">Select or enter a query above and click "Execute Query".</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: LIBRARY CATALOG & ACTIONS -->
+    <!-- ========================================================================= -->
+    <div id="view-catalog" class="tab-view hidden space-y-6">
+      <!-- Search & Filters -->
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3 flex-1">
+          <div class="relative w-full sm:w-64">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            <input type="text" id="catalog-search" oninput="loadCatalog()" placeholder="Search books by title, ISBN..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500">
+          </div>
+
+          <select id="catalog-genre-filter" onchange="loadCatalog()" class="text-xs border border-slate-200 rounded-lg px-3 py-2 bg-slate-50">
+            <option value="all">All Genres</option>
+            <option value="GEN01">Algorithms & Data Structures</option>
+            <option value="GEN02">Database & Distributed Systems</option>
+            <option value="GEN03">Artificial Intelligence & ML</option>
+            <option value="GEN04">Software Architecture & Design</option>
+            <option value="GEN05">Operating Systems & Low-Level</option>
+            <option value="GEN06">Computer Networks & Security</option>
+            <option value="GEN07">Theory of Computation & Math</option>
+            <option value="GEN08">Tech Biography & Sci-Fi</option>
+          </select>
+        </div>
+
+        <button onclick="openBorrowModal('BK01')" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-plus"></i> New Borrow Transaction
+        </button>
+      </div>
+
+      <!-- Book Grid -->
+      <div id="books-catalog-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- Dynamically populated -->
+      </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: PROJECT REPORT & VIVA PREPARATION -->
+    <!-- ========================================================================= -->
+    <div id="view-docs" class="tab-view hidden space-y-6">
+      <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm space-y-8">
+        <!-- Title Banner -->
+        <div class="border-b border-slate-200 pb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full">Academic Submission</span>
+          <h2 class="text-2xl font-black text-slate-900 mt-2">BookGraph – Library Book Recommendation System</h2>
+          <p class="text-sm text-slate-600 mt-1">Course: <span class="font-semibold text-slate-800">CSAEC59: AEC-NoSQL (20-Mark Component)</span> • Department of Computer Science & Engineering, RIT</p>
+          <div class="mt-4 flex flex-wrap gap-4 text-xs font-medium text-slate-700">
+            <div>👨‍💻 <strong>Kaneeshkumar G K</strong> (1MS24CS075)</div>
+            <div>👨‍💻 <strong>Kaustubh Nadiger</strong> (1MS24CS080)</div>
+            <div>👨‍💻 <strong>Neville Richard Smith</strong> (1MS24CS109)</div>
+            <div>👩‍🏫 <strong>Guide:</strong> Prof. Akshatha Kamath</div>
+          </div>
+        </div>
+
+        <!-- Section 1: Relational vs Graph Database Comparison -->
+        <div>
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-table-columns text-blue-600"></i> Why Neo4j Over Relational (SQL) Databases?
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
+              <thead class="bg-slate-100 text-slate-800 font-semibold border-b border-slate-200">
+                <tr>
+                  <th class="p-3">Feature</th>
+                  <th class="p-3">Relational Database (SQL / RDBMS)</th>
+                  <th class="p-3">Graph Database (Neo4j / Property Graph)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200">
+                <tr>
+                  <td class="p-3 font-semibold text-slate-800">Data Model</td>
+                  <td class="p-3 text-slate-600">Flat tables with rows and foreign key columns.</td>
+                  <td class="p-3 text-slate-800 font-medium">Nodes (entities) and directed Relationships (first-class citizens).</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-800">Recommendation Query</td>
+                  <td class="p-3 text-slate-600">Requires 4 to 6 multi-table <code>JOIN</code> operations (slow as tables grow).</td>
+                  <td class="p-3 text-slate-800 font-medium">Single line Cypher pattern matching using pointer traversal (index-free adjacency).</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-800">Traversal Speed</td>
+                  <td class="p-3 text-slate-600">O(log N) per join; index lookups required at every step.</td>
+                  <td class="p-3 text-slate-800 font-medium">O(1) pointer dereferencing per relationship hop, independent of total database size.</td>
+                </tr>
+                <tr>
+                  <td class="p-3 font-semibold text-slate-800">Schema Flexibility</td>
+                  <td class="p-3 text-slate-600">Rigid schema; adding new relationship attributes requires table schema alterations.</td>
+                  <td class="p-3 text-slate-800 font-medium">Dynamic property graphs; relationships can hold arbitrary properties (e.g. stars, status).</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Section 2: Expected Viva Questions & Answers -->
+        <div>
+          <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-question text-purple-600"></i> 20-Mark Viva Preparation Questions & Answers
+          </h3>
+          <div class="space-y-4">
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+              <h4 class="text-xs font-bold text-slate-900 mb-1">Q1: What is the core data model in Neo4j and how is it used in BookGraph?</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Neo4j uses the <strong>Labeled Property Graph (LPG)</strong> model. Entities are represented as <em>Nodes</em> with labels (<code>:Student</code>, <code>:Book</code>, <code>:Author</code>, <code>:Genre</code>) and key-value properties. Connections are represented as directed <em>Relationships</em> (<code>[:BORROWED]</code>, <code>[:WRITTEN_BY]</code>, <code>[:BELONGS_TO]</code>, <code>[:RATED]</code>), which are stored as direct pointers on disk.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+              <h4 class="text-xs font-bold text-slate-900 mb-1">Q2: How does Collaborative Filtering work in Cypher without complex machine learning?</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Collaborative filtering is achieved through simple graph pattern matching:
+                <code>(me:Student)-[:BORROWED]->(shared:Book)<-[:BORROWED]-(peer:Student)-[:BORROWED]->(rec:Book)</code>.
+                By filtering out books already borrowed by <code>me</code> (<code>WHERE NOT (me)-[:BORROWED]->(rec)</code>) and grouping by <code>count(DISTINCT peer)</code>, the graph naturally ranks books read by students with similar taste.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+              <h4 class="text-xs font-bold text-slate-900 mb-1">Q3: What is "Index-Free Adjacency" in Neo4j?</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                In relational databases, joining two tables requires searching an index (usually a B-tree) to locate matching foreign keys. In Neo4j, each node directly contains physical pointers to its adjacent relationships and connected nodes. Traversal is <strong>O(1)</strong> per hop, making path finding constant time regardless of how many million records exist.
+              </p>
+            </div>
+
+            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+              <h4 class="text-xs font-bold text-slate-900 mb-1">Q4: How do you connect Neo4j with Node.js in this project?</h4>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                We use the official <code>neo4j-driver</code> npm package communicating over the binary <strong>Bolt Protocol</strong> (port 7687). Sessions execute parameterized Cypher queries via <code>session.run(query, params)</code> to prevent Cypher injection and return graph records formatted as JSON for the web UI and Vis.js.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Setup Instructions -->
+        <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-5">
+          <h3 class="text-xs font-bold text-blue-900 mb-2">Connecting to Live Neo4j (Free Cloud AuraDB or Desktop):</h3>
+          <ol class="list-decimal list-inside text-xs text-blue-800 space-y-1.5 leading-relaxed">
+            <li>Create a free cloud Neo4j instance at <a href="https://neo4j.com/cloud/aura-free/" target="_blank" class="underline font-bold">neo4j.com/cloud/aura-free</a> (or start Neo4j Desktop / Docker).</li>
+            <li>Copy your connection URI (e.g. <code>neo4j+s://xxxxxx.databases.neo4j.io</code>) and password into the <code>.env</code> file in <code>scratch/bookgraph</code>.</li>
+            <li>Run <code>npm run seed</code> to automatically populate all books, students, authors, and relationships!</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: BORROW BOOK -->
+  <div id="borrow-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+      <h3 id="modal-borrow-title" class="font-bold text-slate-900 text-base mb-1">Borrow Book</h3>
+      <p class="text-xs text-slate-500 mb-4">Creates a new <code>[:BORROWED]</code> relationship edge in the graph.</p>
+
+      <div class="space-y-3 mb-6">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Student:</label>
+          <select id="borrow-student-select" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50"></select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Loan Duration:</label>
+          <input type="text" value="15 Days (Auto-calculated due date)" readonly class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-100 text-slate-500 font-mono">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2">
+        <button onclick="closeBorrowModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button onclick="submitBorrow()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold shadow-sm">Confirm Borrow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RATE BOOK -->
+  <div id="rate-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl border border-slate-200">
+      <h3 id="modal-rate-title" class="font-bold text-slate-900 text-base mb-1">Rate Book</h3>
+      <p class="text-xs text-slate-500 mb-4">Creates a <code>[:RATED {stars, review}]</code> relationship edge.</p>
+
+      <div class="space-y-3 mb-6">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Rating (Stars):</label>
+          <select id="rate-stars" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50 font-semibold text-amber-600">
+            <option value="5">★★★★★ (5 Stars - Exceptional)</option>
+            <option value="4">★★★★☆ (4 Stars - Highly Recommended)</option>
+            <option value="3">★★★☆☆ (3 Stars - Good)</option>
+            <option value="2">★★☆☆☆ (2 Stars - Average)</option>
+            <option value="1">★☆☆☆☆ (1 Star - Poor)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Review / Comment:</label>
+          <textarea id="rate-review" rows="3" placeholder="Write a short review..." class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50"></textarea>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2">
+        <button onclick="closeRateModal()" class="px-4 py-2 border border-slate-200 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-50">Cancel</button>
+        <button onclick="submitRating()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-sm">Submit Rating</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/graph-vis.js"></script>
+  <script src="/js/app.js"></script>
+  <script>
+    function onAlgoChange(val) {
+      const degreesBox = document.getElementById('degrees-selectors');
+      if (val === 'degrees') {
+        degreesBox.classList.remove('hidden');
+      } else {
+        degreesBox.classList.add('hidden');
+      }
+      generateRecommendations();
+    }
+  </script>
+</body>
+</html>

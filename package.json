@@ -1,0 +1,28 @@
+{
+  "name": "bookgraph-library-recommendation",
+  "version": "1.0.0",
+  "description": "BookGraph - Library Book Recommendation System using Neo4j Graph Database (RIT CSE NoSQL Component)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "seed": "node src/scripts/seedNeo4j.js"
+  },
+  "keywords": [
+    "neo4j",
+    "graph-database",
+    "cypher",
+    "recommendation-system",
+    "nosql",
+    "collaborative-filtering",
+    "library-management"
+  ],
+  "author": "Kaneeshkumar G K, Kaustubh Nadiger, Neville Richard Smith (RIT CSE)",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "neo4j-driver": "^5.27.0"
+  }
+}
