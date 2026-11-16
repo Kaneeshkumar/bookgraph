@@ -1,7 +1,6 @@
 // ==============================================================================
-// BookGraph - Library Book Recommendation System
-// CSAEC59: AEC-NoSQL (Ramaiah Institute of Technology, Bangalore)
-// Script 03: Complete Cypher Query Suite for Evaluation & Report
+// BookGraph - Graph-Native Library Recommendation System
+// Script 03: Complete Cypher Query Suite & Analytics Queries
 // ==============================================================================
 
 // ==============================================================================

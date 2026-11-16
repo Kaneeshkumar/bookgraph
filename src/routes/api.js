@@ -10,15 +10,14 @@ const graphController = require('../controllers/graphController');
 const libraryController = require('../controllers/libraryController');
 const recommendationController = require('../controllers/recommendationController');
 const cypherController = require('../controllers/cypherController');
+const analyticsController = require('../controllers/analyticsController');
 
 // 1. System & Connection Status
 router.get('/status', (req, res) => {
   res.json({
     success: true,
-    system: 'BookGraph - Library Recommendation Platform',
-    institution: 'Ramaiah Institute of Technology (RIT)',
-    department: 'Computer Science & Engineering',
-    course: 'CSAEC59: AEC-NoSQL (20-Mark Component)',
+    system: 'BookGraph - Graph-Native Library Recommendation Engine',
+    version: '1.0.0',
     databaseStatus: getConnectionStatus()
   });
 });
@@ -40,7 +39,10 @@ router.get('/recommendations/content/:usn', recommendationController.getContentB
 router.get('/recommendations/hybrid/:usn', recommendationController.getHybridRecommendations);
 router.get('/recommendations/degrees', recommendationController.getDegreesOfReading);
 
-// 5. Cypher Query Runner Endpoints
+// 5. Graph Analytics & Centrality Endpoints
+router.get('/analytics/insights', analyticsController.getAnalyticsInsights);
+
+// 6. Cypher Query Runner Endpoints
 router.get('/cypher/predefined', cypherController.getPredefinedQueries);
 router.post('/cypher/run', cypherController.runCypher);
 

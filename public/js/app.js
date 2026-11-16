@@ -67,6 +67,8 @@ function switchTab(tabId) {
     setTimeout(() => {
       if (network) network.fit();
     }, 200);
+  } else if (tabId === 'analytics') {
+    loadAnalytics();
   }
 }
 
@@ -525,5 +527,100 @@ async function submitRating() {
     await loadGraphView();
   } catch (err) {
     alert('Failed to rate: ' + err.message);
+  }
+}
+
+// 9. Graph Analytics & Network Insights
+async function loadAnalytics() {
+  const container = document.getElementById('analytics-content');
+  if (!container) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/analytics/insights`);
+    const data = await res.json();
+
+    if (!data.success) return;
+
+    // Render Metrics Overview
+    document.getElementById('analytics-density').innerText = data.networkStats.density;
+    document.getElementById('analytics-avg-degree').innerText = data.networkStats.avgDegree;
+    document.getElementById('analytics-active-loans').innerText = `${data.networkStats.activeLoans} (${data.networkStats.activeLoanRate}%)`;
+    document.getElementById('analytics-returned-loans').innerText = data.networkStats.returnedLoans;
+
+    // Render Degree Centrality Table
+    const centralityTbody = document.getElementById('centrality-table-body');
+    if (centralityTbody) {
+      let tbodyHtml = '';
+      data.topConnectedBooks.forEach((book, idx) => {
+        tbodyHtml += `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="px-4 py-3 font-mono font-bold text-slate-400">#${idx + 1}</td>
+            <td class="px-4 py-3">
+              <div class="font-bold text-slate-800 text-xs">${book.title}</div>
+              <div class="text-[11px] text-slate-400">By ${book.authors}</div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="text-[10px] px-2 py-0.5 bg-slate-100 rounded text-slate-600 font-medium">${book.genre}</span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                <i class="fa-solid fa-arrows-split-up-and-left mr-1 text-[10px]"></i> ${book.degreeCentrality} Borrows
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-700 font-semibold text-xs">
+              <i class="fa-solid fa-star text-amber-400 mr-1"></i>${book.avgRating}
+            </td>
+          </tr>
+        `;
+      });
+      centralityTbody.innerHTML = tbodyHtml;
+    }
+
+    // Render Genre Progress Distribution
+    const genreProgressContainer = document.getElementById('genre-progress-bars');
+    if (genreProgressContainer) {
+      let gHtml = '';
+      const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-purple-600', 'bg-amber-600', 'bg-rose-600', 'bg-indigo-600', 'bg-teal-600', 'bg-cyan-600'];
+      data.genreMetrics.forEach((gm, idx) => {
+        const color = colors[idx % colors.length];
+        gHtml += `
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-semibold text-slate-700">${gm.name}</span>
+              <span class="font-mono text-slate-500 font-medium">${gm.count} borrows (${gm.percentage}%)</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div class="${color} h-2 rounded-full transition-all duration-500" style="width: ${gm.percentage}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      genreProgressContainer.innerHTML = gHtml;
+    }
+
+    // Render Co-Borrowing Clusters
+    const clusterContainer = document.getElementById('co-borrowing-container');
+    if (clusterContainer) {
+      let cHtml = '';
+      data.coBorrowingClusters.forEach(cluster => {
+        cHtml += `
+          <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-3 hover:bg-white hover:shadow-sm transition">
+            <div class="flex-1">
+              <div class="text-xs font-bold text-slate-800 line-clamp-1">${cluster.book1}</div>
+              <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider my-0.5">Frequently Borrowed With</div>
+              <div class="text-xs font-bold text-blue-700 line-clamp-1">${cluster.book2}</div>
+            </div>
+            <div class="text-right">
+              <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-lg text-xs font-bold whitespace-nowrap">
+                ${cluster.sharedReaders} Shared Readers
+              </span>
+            </div>
+          </div>
+        `;
+      });
+      clusterContainer.innerHTML = cHtml;
+    }
+  } catch (err) {
+    console.error('Failed to load analytics:', err);
   }
 }

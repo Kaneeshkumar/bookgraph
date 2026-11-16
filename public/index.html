@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BookGraph - Library Recommendation System (Neo4j)</title>
+  <title>BookGraph - Graph-Native Library Recommendation System (Neo4j)</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Vis.js Network -->
@@ -19,32 +19,28 @@
   <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
-        <!-- RIT Crest & Title -->
+        <!-- Brand Title & Logo -->
         <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-gradient-to-br from-red-700 via-rose-800 to-amber-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md border border-red-800">
-            RIT
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-700 via-indigo-700 to-purple-800 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-md border border-blue-900">
+            <i class="fa-solid fa-diagram-project"></i>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="text-lg font-black text-slate-900 tracking-tight">BookGraph</h1>
-              <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">Neo4j Graph DB</span>
-              <span class="bg-purple-100 text-purple-800 text-[11px] font-bold px-2 py-0.5 rounded-full">CSAEC59: AEC-NoSQL</span>
+              <h1 class="text-xl font-black text-slate-900 tracking-tight">BookGraph</h1>
+              <span class="bg-blue-100 text-blue-800 text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Neo4j Graph DB</span>
+              <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">v1.0</span>
             </div>
             <p class="text-xs text-slate-500 font-medium">
-              Ramaiah Institute of Technology • Dept. of Computer Science & Engineering
+              Graph-Native Library Recommendation & Knowledge Platform
             </p>
           </div>
         </div>
 
-        <!-- Status & Badge -->
-        <div class="hidden md:flex items-center gap-6">
-          <div class="text-right text-xs">
-            <p class="font-bold text-slate-800">Department of Computer Science & Engineering</p>
-            <p class="text-slate-500">Autonomous Institute, Affiliated to VTU</p>
-          </div>
-          <div id="db-status-pill" class="flex items-center px-3 py-1 bg-slate-100 border border-slate-200 rounded-full">
+        <!-- System & Database Status -->
+        <div class="flex items-center gap-4">
+          <div id="db-status-pill" class="flex items-center px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full">
             <span class="inline-block w-2.5 h-2.5 bg-slate-400 rounded-full mr-2"></span>
-            <span class="text-xs text-slate-600">Checking DB...</span>
+            <span class="text-xs text-slate-600">Connecting to Graph Engine...</span>
           </div>
         </div>
       </div>
@@ -67,9 +63,9 @@
           <i class="fa-solid fa-book text-sm"></i>
           <span>Library Catalog</span>
         </a>
-        <a href="#docs" data-target="docs" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
-          <i class="fa-solid fa-graduation-cap text-sm"></i>
-          <span>Report & Viva Prep</span>
+        <a href="#analytics" data-target="analytics" class="nav-tab px-4 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+          <i class="fa-solid fa-chart-line text-sm"></i>
+          <span>Network Analytics</span>
         </a>
       </nav>
     </div>
@@ -86,11 +82,11 @@
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-            <i class="fa-solid fa-user-graduate"></i>
+            <i class="fa-solid fa-users"></i>
           </div>
           <div>
             <div id="stat-students" class="text-xl font-black text-slate-900">--</div>
-            <div class="text-xs text-slate-500">Students Enrolled</div>
+            <div class="text-xs text-slate-500">Registered Readers</div>
           </div>
         </div>
 
@@ -200,7 +196,7 @@
         <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
             <h2 class="text-lg font-bold text-slate-900">Graph-Powered Recommendation Simulator</h2>
-            <p class="text-xs text-slate-500">Traverse student borrowing habits, authors, and genres through Neo4j graph relationships.</p>
+            <p class="text-xs text-slate-500">Traverse borrowing habits, co-readership, and author relationships through Neo4j graph traversal.</p>
           </div>
           <span id="rec-algo-badge" class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
             Collaborative Filtering
@@ -210,7 +206,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <!-- Student Selector -->
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Target Student:</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Target Reader:</label>
             <select id="rec-student-select" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
               <!-- Dynamically populated -->
             </select>
@@ -223,7 +219,7 @@
               <option value="collaborative">1. Collaborative Filtering (Peer Borrowing Traversal)</option>
               <option value="content">2. Content-Based (Top Genre & Author Affinity)</option>
               <option value="hybrid">3. Hybrid Quality (Peer Support + 5★ Ratings)</option>
-              <option value="degrees">4. Degrees of Reading (Shortest Path Between Students)</option>
+              <option value="degrees">4. Degrees of Reading (Shortest Path Between Readers)</option>
             </select>
           </div>
 
@@ -238,11 +234,11 @@
         <!-- Degrees of Reading Secondary Selectors (Initially Hidden) -->
         <div id="degrees-selectors" class="hidden mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Student 1 (Source):</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Reader 1 (Source):</label>
             <select id="path-student-1" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50"></select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Student 2 (Target):</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Reader 2 (Target):</label>
             <select id="path-student-2" class="w-full text-xs border border-slate-200 rounded-lg p-2 bg-slate-50"></select>
           </div>
         </div>
@@ -251,7 +247,7 @@
       <!-- Recommendation Results Grid -->
       <div>
         <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-sparkles text-amber-500"></i> Recommended Books For Student
+          <i class="fa-solid fa-sparkles text-amber-500"></i> Recommended Books For Reader
         </h3>
         <div id="recommendations-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <!-- Dynamically populated -->
@@ -278,10 +274,10 @@
     <!-- ========================================================================= -->
     <div id="view-cypher" class="tab-view hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Predefined Syllabus Queries List -->
+        <!-- Curated Queries List -->
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
-          <h3 class="text-sm font-bold text-slate-900 mb-1">Predefined Academic Queries</h3>
-          <p class="text-xs text-slate-500 mb-4">Click any query from the CSAEC59 syllabus to load into the console.</p>
+          <h3 class="text-sm font-bold text-slate-900 mb-1">Curated Cypher Queries</h3>
+          <p class="text-xs text-slate-500 mb-4">Click any query below to inspect its graph traversal pattern.</p>
           <div id="predefined-queries-list" class="space-y-2">
             <!-- Dynamically populated -->
           </div>
@@ -359,107 +355,88 @@
     </div>
 
     <!-- ========================================================================= -->
-    <!-- TAB 5: PROJECT REPORT & VIVA PREPARATION -->
+    <!-- TAB 5: GRAPH ANALYTICS & NETWORK INSIGHTS (NEW USEFUL FEATURE) -->
     <!-- ========================================================================= -->
-    <div id="view-docs" class="tab-view hidden space-y-6">
-      <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-sm space-y-8">
-        <!-- Title Banner -->
-        <div class="border-b border-slate-200 pb-6">
-          <span class="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-full">Academic Submission</span>
-          <h2 class="text-2xl font-black text-slate-900 mt-2">BookGraph – Library Book Recommendation System</h2>
-          <p class="text-sm text-slate-600 mt-1">Course: <span class="font-semibold text-slate-800">CSAEC59: AEC-NoSQL (20-Mark Component)</span> • Department of Computer Science & Engineering, RIT</p>
-          <div class="mt-4 flex flex-wrap gap-4 text-xs font-medium text-slate-700">
-            <div>📚 <strong>Technology:</strong> Neo4j Graph Database (Cypher)</div>
-            <div>🏛️ <strong>Institution:</strong> Ramaiah Institute of Technology, Bangalore</div>
+    <div id="view-analytics" class="tab-view hidden space-y-6">
+      <div id="analytics-content" class="space-y-6">
+        <!-- 4 Network Health KPI Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-semibold mb-1">Graph Density</div>
+            <div id="analytics-density" class="text-2xl font-black text-blue-700 font-mono">--</div>
+            <div class="text-[11px] text-slate-400 mt-1">Interconnectedness ratio</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-semibold mb-1">Average Node Degree</div>
+            <div id="analytics-avg-degree" class="text-2xl font-black text-emerald-700 font-mono">--</div>
+            <div class="text-[11px] text-slate-400 mt-1">Mean edges per node</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-semibold mb-1">Active Loan Velocity</div>
+            <div id="analytics-active-loans" class="text-2xl font-black text-amber-700 font-mono">--</div>
+            <div class="text-[11px] text-slate-400 mt-1">Checked out circulation rate</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-semibold mb-1">Completed Loans</div>
+            <div id="analytics-returned-loans" class="text-2xl font-black text-purple-700 font-mono">--</div>
+            <div class="text-[11px] text-slate-400 mt-1">Historical returned reads</div>
           </div>
         </div>
 
-        <!-- Section 1: Relational vs Graph Database Comparison -->
-        <div>
-          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
-            <i class="fa-solid fa-table-columns text-blue-600"></i> Why Neo4j Over Relational (SQL) Databases?
-          </h3>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border border-slate-200 rounded-lg">
-              <thead class="bg-slate-100 text-slate-800 font-semibold border-b border-slate-200">
-                <tr>
-                  <th class="p-3">Feature</th>
-                  <th class="p-3">Relational Database (SQL / RDBMS)</th>
-                  <th class="p-3">Graph Database (Neo4j / Property Graph)</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-200">
-                <tr>
-                  <td class="p-3 font-semibold text-slate-800">Data Model</td>
-                  <td class="p-3 text-slate-600">Flat tables with rows and foreign key columns.</td>
-                  <td class="p-3 text-slate-800 font-medium">Nodes (entities) and directed Relationships (first-class citizens).</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-semibold text-slate-800">Recommendation Query</td>
-                  <td class="p-3 text-slate-600">Requires 4 to 6 multi-table <code>JOIN</code> operations (slow as tables grow).</td>
-                  <td class="p-3 text-slate-800 font-medium">Single line Cypher pattern matching using pointer traversal (index-free adjacency).</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-semibold text-slate-800">Traversal Speed</td>
-                  <td class="p-3 text-slate-600">O(log N) per join; index lookups required at every step.</td>
-                  <td class="p-3 text-slate-800 font-medium">O(1) pointer dereferencing per relationship hop, independent of total database size.</td>
-                </tr>
-                <tr>
-                  <td class="p-3 font-semibold text-slate-800">Schema Flexibility</td>
-                  <td class="p-3 text-slate-600">Rigid schema; adding new relationship attributes requires table schema alterations.</td>
-                  <td class="p-3 text-slate-800 font-medium">Dynamic property graphs; relationships can hold arbitrary properties (e.g. stars, status).</td>
-                </tr>
-              </tbody>
-            </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left 2 Cols: Degree Centrality (Most Connected Hubs) -->
+          <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm">Degree Centrality Ranking (Most Connected Hubs)</h3>
+                <p class="text-xs text-slate-500">Nodes with highest incoming [:BORROWED] edges driving collaborative recommendations.</p>
+              </div>
+              <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-lg border border-blue-200">
+                Network Hubs
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
+                  <tr>
+                    <th class="px-4 py-2.5">Rank</th>
+                    <th class="px-4 py-2.5">Book Title & Authors</th>
+                    <th class="px-4 py-2.5">Domain</th>
+                    <th class="px-4 py-2.5">Degree Centrality</th>
+                    <th class="px-4 py-2.5">Rating</th>
+                  </tr>
+                </thead>
+                <tbody id="centrality-table-body" class="divide-y divide-slate-100">
+                  <!-- Dynamically populated -->
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
 
-        <!-- Section 2: Expected Viva Questions & Answers -->
-        <div>
-          <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-circle-question text-purple-600"></i> 20-Mark Viva Preparation Questions & Answers
-          </h3>
-          <div class="space-y-4">
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-              <h4 class="text-xs font-bold text-slate-900 mb-1">Q1: What is the core data model in Neo4j and how is it used in BookGraph?</h4>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Neo4j uses the <strong>Labeled Property Graph (LPG)</strong> model. Entities are represented as <em>Nodes</em> with labels (<code>:Student</code>, <code>:Book</code>, <code>:Author</code>, <code>:Genre</code>) and key-value properties. Connections are represented as directed <em>Relationships</em> (<code>[:BORROWED]</code>, <code>[:WRITTEN_BY]</code>, <code>[:BELONGS_TO]</code>, <code>[:RATED]</code>), which are stored as direct pointers on disk.
-              </p>
+          <!-- Right Col: Co-Borrowing Reader Clusters -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Co-Borrowing Clusters</h3>
+              <p class="text-xs text-slate-500">Pairs of titles frequently read together by common readers (Association Rules).</p>
             </div>
-
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-              <h4 class="text-xs font-bold text-slate-900 mb-1">Q2: How does Collaborative Filtering work in Cypher without complex machine learning?</h4>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                Collaborative filtering is achieved through simple graph pattern matching:
-                <code>(me:Student)-[:BORROWED]->(shared:Book)<-[:BORROWED]-(peer:Student)-[:BORROWED]->(rec:Book)</code>.
-                By filtering out books already borrowed by <code>me</code> (<code>WHERE NOT (me)-[:BORROWED]->(rec)</code>) and grouping by <code>count(DISTINCT peer)</code>, the graph naturally ranks books read by students with similar taste.
-              </p>
-            </div>
-
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-              <h4 class="text-xs font-bold text-slate-900 mb-1">Q3: What is "Index-Free Adjacency" in Neo4j?</h4>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                In relational databases, joining two tables requires searching an index (usually a B-tree) to locate matching foreign keys. In Neo4j, each node directly contains physical pointers to its adjacent relationships and connected nodes. Traversal is <strong>O(1)</strong> per hop, making path finding constant time regardless of how many million records exist.
-              </p>
-            </div>
-
-            <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-              <h4 class="text-xs font-bold text-slate-900 mb-1">Q4: How do you connect Neo4j with Node.js in this project?</h4>
-              <p class="text-xs text-slate-600 leading-relaxed">
-                We use the official <code>neo4j-driver</code> npm package communicating over the binary <strong>Bolt Protocol</strong> (port 7687). Sessions execute parameterized Cypher queries via <code>session.run(query, params)</code> to prevent Cypher injection and return graph records formatted as JSON for the web UI and Vis.js.
-              </p>
+            <div id="co-borrowing-container" class="space-y-2.5">
+              <!-- Dynamically populated -->
             </div>
           </div>
         </div>
 
-        <!-- Section 3: Setup Instructions -->
-        <div class="bg-blue-50/70 border border-blue-200 rounded-xl p-5">
-          <h3 class="text-xs font-bold text-blue-900 mb-2">Connecting to Live Neo4j (Free Cloud AuraDB or Desktop):</h3>
-          <ol class="list-decimal list-inside text-xs text-blue-800 space-y-1.5 leading-relaxed">
-            <li>Create a free cloud Neo4j instance at <a href="https://neo4j.com/cloud/aura-free/" target="_blank" class="underline font-bold">neo4j.com/cloud/aura-free</a> (or start Neo4j Desktop / Docker).</li>
-            <li>Copy your connection URI (e.g. <code>neo4j+s://xxxxxx.databases.neo4j.io</code>) and password into the <code>.env</code> file in <code>scratch/bookgraph</code>.</li>
-            <li>Run <code>npm run seed</code> to automatically populate all books, students, authors, and relationships!</li>
-          </ol>
+        <!-- Genre Circulation Distribution -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-bold text-slate-900 text-sm">Circulation Share by Subject Domain</h3>
+              <p class="text-xs text-slate-500">Distribution of library transactions across graph genre clusters.</p>
+            </div>
+            <span class="text-xs font-mono text-slate-400">Total Borrows Breakdown</span>
+          </div>
+          <div id="genre-progress-bars" class="space-y-3">
+            <!-- Dynamically populated -->
+          </div>
         </div>
       </div>
     </div>
@@ -473,7 +450,7 @@
 
       <div class="space-y-3 mb-6">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Student:</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Select Reader:</label>
           <select id="borrow-student-select" class="w-full text-xs border border-slate-200 rounded-lg p-2.5 bg-slate-50"></select>
         </div>
         <div>

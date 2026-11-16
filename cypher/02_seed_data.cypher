@@ -1,6 +1,5 @@
 // ==============================================================================
-// BookGraph - Library Book Recommendation System
-// CSAEC59: AEC-NoSQL (Ramaiah Institute of Technology, Bangalore)
+// BookGraph - Graph-Native Library Recommendation System
 // Script 02: Comprehensive Seed Dataset (Idempotent using MERGE)
 // ==============================================================================
 

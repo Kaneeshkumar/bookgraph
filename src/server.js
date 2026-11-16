@@ -1,7 +1,6 @@
 // ==============================================================================
 // BookGraph - Express Web Server Entry Point
-// Ramaiah Institute of Technology - Department of CSE
-// Course: CSAEC59: AEC-NoSQL
+// Graph-Native Library Recommendation System using Neo4j
 // ==============================================================================
 
 const express = require('express');
@@ -34,9 +33,8 @@ app.get('*', (req, res) => {
 // Start Server and Initialize Neo4j Driver
 async function startServer() {
   console.log('================================================================');
-  console.log('  BookGraph: Library Book Recommendation System (Neo4j)');
-  console.log('  Department of Computer Science & Engineering, RIT Bangalore');
-  console.log('  Course: CSAEC59: AEC-NoSQL (20-Mark Component)');
+  console.log('  BookGraph: Library Book Recommendation Platform (Neo4j)');
+  console.log('  Graph-Powered Discovery, Circulation & Analytics');
   console.log('================================================================');
 
   await initNeo4j();
@@ -46,7 +44,8 @@ async function startServer() {
     console.log(`📊 Graph Visualizer:    http://localhost:${PORT}/#graph`);
     console.log(`💡 Recommendations:     http://localhost:${PORT}/#recommend`);
     console.log(`⚡ Cypher Lab:          http://localhost:${PORT}/#cypher`);
-    console.log(`📚 Library Catalog:     http://localhost:${PORT}/#catalog\n`);
+    console.log(`📚 Library Catalog:     http://localhost:${PORT}/#catalog`);
+    console.log(`📈 Network Analytics:   http://localhost:${PORT}/#analytics\n`);
   });
 
   // Graceful shutdown

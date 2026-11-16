@@ -1,26 +1,26 @@
 # BookGraph - Library Book Recommendation System
 
-> **A Graph-Powered Academic Library Recommendation Platform Built with Neo4j**  
-> **Course:** CSAEC59: AEC-NoSQL (20-Mark Component)  
-> **Institution:** Ramaiah Institute of Technology (Autonomous Institute, Affiliated to VTU), Bangalore  
-> **Department:** Department of Computer Science & Engineering  
-> **Academic Period:** August – December 2026  
+> **A Graph-Native Library Recommendation & Circulation Analytics Platform Built with Neo4j**  
 
 ---
 
----
+## 🌟 Key Features
 
-## 🌟 Key Highlights
-- **Property Graph Model:** Replaces slow multi-table relational joins with directed graph traversals connecting `Student`, `Book`, `Author`, and `Genre` nodes.
-- **Multiple Recommendation Algorithms:**
+- **Property Graph Architecture:** Eliminates expensive multi-table relational joins with directed graph traversals connecting `Student`, `Book`, `Author`, and `Genre` nodes.
+- **Multiple Graph Recommendation Algorithms:**
   1. **Collaborative Filtering:** $(Student_A) \rightarrow (Book_X) \leftarrow (Peer) \rightarrow (Book_Y)$
-  2. **Content-Based Filtering:** Top genres and favorite authors.
-  3. **Hybrid Quality Score:** Weighted score combining peer borrowing overlap with rating stars ($1-5\star$).
-  4. **Degrees of Reading:** Shortest path traversal between two students via shared books.
+  2. **Content-Based Filtering:** Top genres and author affinity scoring.
+  3. **Hybrid Quality Score:** Weighted composite scoring combining peer support and rating quality ($1-5\star$).
+  4. **Degrees of Reading:** Shortest path BFS traversal between two readers via shared books.
 - **Interactive 2D Graph Visualizer:** Built with **Vis.js Network**, featuring color-coded nodes, physics force layout, ego-network filtering, and click-to-inspect properties.
-- **Live Cypher Query Lab:** Interactive console with preloaded syllabus queries, custom Cypher editor, execution timing metrics, and dynamic results tables.
-- **Library Circulation Operations:** Live book checkout (`[:BORROWED]`), rating reviews (`[:RATED]`), and catalog search.
-- **Dual-Mode Engine:** Connects to live Neo4j (Local, Docker, or Cloud AuraDB) or runs in high-fidelity simulation mode for zero-setup demonstrations.
+- **📈 Graph Analytics & Centrality Dashboard:**
+  - Degree Centrality (most connected books & key literary hubs)
+  - Genre circulation metrics with visual progress bars
+  - Co-borrowing clusters (books frequently checked out together)
+  - Network density, graph diameter, and active loan metrics
+- **⚡ Live Cypher Query Lab:** Interactive console with curated queries, custom Cypher editor, execution timing metrics, and dynamic results tables.
+- **📚 Library Circulation Operations:** Real-time book checkout (`[:BORROWED]`), rating reviews (`[:RATED]`), and catalog search.
+- **Dual-Mode Engine:** Seamlessly connects to live Neo4j (Local, Docker, or Cloud AuraDB) or runs in high-fidelity simulation mode for instant zero-setup demonstrations.
 
 ---
 
@@ -37,8 +37,9 @@ bookgraph/
 │   ├── controllers/
 │   │   ├── graphController.js  # Node/edge formatting for Vis.js
 │   │   ├── recommendationController.js # Collaborative, content, hybrid & shortest path algorithms
+│   │   ├── analyticsController.js # Degree centrality, co-borrowing clusters & network metrics
 │   │   ├── libraryController.js # Book catalog, borrow, rate, return operations
-│   │   └── cypherController.js # Predefined syllabus queries & custom query runner
+│   │   └── cypherController.js # Curated queries & custom query runner
 │   ├── data/
 │   │   └── mockData.js         # In-memory graph data store mirroring the Neo4j schema
 │   ├── routes/
@@ -47,15 +48,15 @@ bookgraph/
 │   │   └── seedNeo4j.js        # Automated CLI seeder script for live Neo4j
 │   └── server.js               # Express application entry point
 ├── public/
-│   ├── index.html              # Sleek RIT dashboard with tabbed UI
+│   ├── index.html              # Modern dashboard with tabbed UI
 │   ├── css/
 │   │   └── style.css           # Styling & animations
 │   └── js/
-│       ├── app.js              # Client state, tabs, modals & API caller
+│       ├── app.js              # Client state, tabs, analytics loader & API caller
 │       └── graph-vis.js        # Vis.js network renderer with physics controls
 ├── docs/
-│   ├── PROJECT_REPORT_DRAFT.md # Formatted academic report matching RIT/VTU standards
-│   ├── VIVA_QUESTIONS.md       # 20-mark viva preparation cheat sheet (10+ technical Q&As)
+│   ├── ARCHITECTURE.md         # System design, graph data model & query patterns
+│   ├── API_REFERENCE.md        # Complete REST API documentation
 │   └── SETUP_GUIDE.md          # Setup instructions for Neo4j Aura (Free Cloud), Docker & Desktop
 ├── package.json
 └── .env.example
@@ -65,10 +66,9 @@ bookgraph/
 
 ## 🚀 Quickstart
 
-### 1. Run Instantly (Simulation Mode)
+### 1. Run Instantly (Zero-Setup Mode)
 No database installation or Java required:
 ```bash
-cd scratch/bookgraph
 npm install
 npm start
 ```
@@ -93,35 +93,5 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## 🧪 Cypher Queries Quick Reference
-
-### Collaborative Filtering
-```cypher
-MATCH (me:Student {usn: '1MS24CS075'})-[:BORROWED]->(shared:Book)<-[:BORROWED]-(peer:Student)
-WHERE me <> peer
-MATCH (peer)-[:BORROWED]->(rec:Book)
-WHERE NOT (me)-[:BORROWED]->(rec)
-OPTIONAL MATCH (rec)-[:WRITTEN_BY]->(a:Author)
-OPTIONAL MATCH (rec)-[:BELONGS_TO]->(g:Genre)
-RETURN rec.id AS BookID,
-       rec.title AS Title,
-       collect(DISTINCT a.name) AS Authors,
-       g.name AS Genre,
-       count(DISTINCT peer) AS PeerScore
-ORDER BY PeerScore DESC
-LIMIT 5;
-```
-
-### Degrees of Reading (Shortest Path)
-```cypher
-MATCH p = shortestPath(
-  (s1:Student {usn: '1MS24CS075'})-[:BORROWED*]-(s2:Student {usn: '1MS24CS112'})
-)
-RETURN [node IN nodes(p) | coalesce(node.title, node.name)] AS PathSequence,
-       length(p) AS DegreeDistance;
-```
-
----
-
 ## 📜 License
-MIT License. Developed for Ramaiah Institute of Technology Department of Computer Science & Engineering.
+MIT License.
