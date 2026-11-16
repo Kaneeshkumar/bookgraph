@@ -1,10 +1,10 @@
 // ==============================================================================
 // BookGraph - Graph Analytics & Network Insights Controller
-// Provides Network Centrality, Co-Borrowing Clusters & Domain Metrics
+// Provides Network Centrality, Co-Borrowing Clusters & Active Circulation
 // ==============================================================================
 
 const mockData = require('../data/mockData');
-const { getConnectionStatus, executeCypher } = require('../config/neo4j');
+const { getConnectionStatus } = require('../config/neo4j');
 
 function getAnalyticsInsights(req, res) {
   try {
@@ -65,7 +65,6 @@ function getAnalyticsInsights(req, res) {
       .sort((a, b) => b.count - a.count);
 
     // 3. Co-Borrowing Frequency (Books read together by the same readers)
-    // Build student -> books map
     const studentBooks = {};
     mockData.borrowed.forEach(b => {
       if (!studentBooks[b.studentUsn]) studentBooks[b.studentUsn] = new Set();
@@ -100,15 +99,30 @@ function getAnalyticsInsights(req, res) {
 
     // 4. Overall Network Graph Properties
     const totalNodes = mockData.students.length + mockData.books.length + mockData.authors.length + mockData.genres.length;
-    // Relationships: Borrowed + Rated + Written_By + Belongs_To
     const writtenByCount = mockData.books.reduce((acc, b) => acc + b.authorIds.length, 0);
     const belongsToCount = mockData.books.length;
     const totalEdges = mockData.borrowed.length + mockData.rated.length + writtenByCount + belongsToCount;
     const avgDegree = Number(((totalEdges * 2) / totalNodes).toFixed(2));
     const density = Number(((2 * totalEdges) / (totalNodes * (totalNodes - 1))).toFixed(4));
 
-    const activeLoans = mockData.borrowed.filter(b => b.status === 'ACTIVE').length;
+    // 5. Active Circulation Loans List (Working interactive items)
+    const activeBorrows = mockData.borrowed.filter(b => b.status === 'ACTIVE');
     const returnedLoans = mockData.borrowed.filter(b => b.status === 'RETURNED').length;
+
+    const activeLoansList = activeBorrows.map(loan => {
+      const student = mockData.students.find(s => s.usn === loan.studentUsn);
+      const book = mockData.books.find(b => b.id === loan.bookId);
+      return {
+        usn: loan.studentUsn,
+        studentName: student?.name || loan.studentUsn,
+        branch: student?.branch || 'CSE',
+        bookId: loan.bookId,
+        bookTitle: book?.title || loan.bookId,
+        borrowDate: loan.borrow_date,
+        dueDate: loan.return_date,
+        status: loan.status
+      };
+    });
 
     res.json({
       success: true,
@@ -117,10 +131,11 @@ function getAnalyticsInsights(req, res) {
         totalEdges,
         avgDegree,
         density,
-        activeLoans,
+        activeLoans: activeBorrows.length,
         returnedLoans,
-        activeLoanRate: Math.round((activeLoans / totalBorrows) * 100)
+        activeLoanRate: totalBorrows > 0 ? Math.round((activeBorrows.length / totalBorrows) * 100) : 0
       },
+      activeLoansList,
       topConnectedBooks,
       genreMetrics,
       coBorrowingClusters

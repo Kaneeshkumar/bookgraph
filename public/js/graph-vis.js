@@ -170,3 +170,27 @@ function togglePhysics(enabled) {
     network.setOptions({ physics: { enabled } });
   }
 }
+
+// Select, zoom to, and open inspector for a specific node
+function focusNode(nodeId) {
+  if (!network || !nodesDataSet) return;
+
+  // Ensure node is currently in the dataset
+  if (!nodesDataSet.get(nodeId)) {
+    resetGraphView();
+  }
+
+  network.selectNodes([nodeId]);
+  network.focus(nodeId, {
+    scale: 1.3,
+    animation: {
+      duration: 800,
+      easingFunction: 'easeInOutQuad'
+    }
+  });
+
+  const node = allNodes.find(n => n.id === nodeId);
+  if (node) {
+    displayNodeInspector(node);
+  }
+}
