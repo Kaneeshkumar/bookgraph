@@ -1,0 +1,5 @@
+.git
+.env
+docs/*.pdf
+docs/*.docx
+node_modules

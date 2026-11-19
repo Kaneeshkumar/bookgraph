@@ -93,5 +93,15 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
+## 🌐 Cloud Deployment (Render & Vercel)
+
+BookGraph comes pre-configured for instant 1-click cloud deployment:
+- **Render**: Full persistent Express Node.js web service (configured via `render.yaml`).
+- **Vercel**: Edge/Serverless deployment (configured via `vercel.json` & `api/index.js`).
+
+For complete step-by-step instructions with environment variable setup, see the **[Deployment Guide](docs/DEPLOYMENT_GUIDE.md)**.
+
+---
+
 ## 📜 License
 MIT License.
