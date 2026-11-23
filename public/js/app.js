@@ -7,6 +7,32 @@ let currentTab = 'graph';
 let studentsList = [];
 let booksList = [];
 
+// Universal API Caller: Transparently routes to Express Server or Client Engine
+async function apiCall(endpoint, options = {}) {
+  if (window.location.hostname.includes('github.io') || window.USE_CLIENT_ENGINE) {
+    if (window.handleClientApi) {
+      return window.handleClientApi(endpoint, options);
+    }
+  }
+
+  try {
+    const res = await fetch(endpoint, options);
+    if (!res.ok) {
+      if (window.handleClientApi) {
+        window.USE_CLIENT_ENGINE = true;
+        return window.handleClientApi(endpoint, options);
+      }
+    }
+    return await res.json();
+  } catch (err) {
+    if (window.handleClientApi) {
+      window.USE_CLIENT_ENGINE = true;
+      return window.handleClientApi(endpoint, options);
+    }
+    throw err;
+  }
+}
+
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', async () => {
   setupNavigation();
@@ -75,8 +101,7 @@ function switchTab(tabId) {
 // 2. System Status & Neo4j Connectivity
 async function checkSystemStatus() {
   try {
-    const res = await fetch(`${API_BASE}/status`);
-    const data = await res.json();
+    const data = await apiCall(`${API_BASE}/status`);
     const pill = document.getElementById('db-status-pill');
 
     if (data.databaseStatus?.connected) {
@@ -102,8 +127,7 @@ async function checkSystemStatus() {
 // 3. Load Graph Visualizer
 async function loadGraphView() {
   try {
-    const res = await fetch(`${API_BASE}/graph`);
-    const data = await res.json();
+    const data = await apiCall(`${API_BASE}/graph`);
 
     if (data.success) {
       document.getElementById('stat-nodes').innerText = data.stats.totalNodes;
@@ -121,8 +145,7 @@ async function loadGraphView() {
 // 4. Load Students into Selectors
 async function loadStudents() {
   try {
-    const res = await fetch(`${API_BASE}/students`);
-    const data = await res.json();
+    const data = await apiCall(`${API_BASE}/students`);
     studentsList = data.students || [];
 
     const recStudentSelect = document.getElementById('rec-student-select');
@@ -184,8 +207,7 @@ async function generateRecommendations() {
       endpoint = `${API_BASE}/recommendations/degrees?student1=${s1}&student2=${s2}`;
     }
 
-    const res = await fetch(endpoint);
-    const data = await res.json();
+    const data = await apiCall(endpoint);
 
     if (!data.success) {
       container.innerHTML = `<div class="col-span-full p-4 bg-red-50 text-red-700 rounded-lg">${data.message || 'Error'}</div>`;
@@ -302,8 +324,7 @@ function renderShortestPathResult(container, data) {
 // 6. Cypher Query Lab
 async function loadPredefinedQueries() {
   try {
-    const res = await fetch(`${API_BASE}/cypher/predefined`);
-    const data = await res.json();
+    const data = await apiCall(`${API_BASE}/cypher/predefined`);
     const container = document.getElementById('predefined-queries-list');
     if (!container || !data.queries) return;
 
@@ -356,12 +377,11 @@ async function executeCypherQuery() {
   `;
 
   try {
-    const res = await fetch(`${API_BASE}/cypher/run`, {
+    const data = await apiCall(`${API_BASE}/cypher/run`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ query, queryId })
     });
-    const data = await res.json();
 
     if (!data.success) {
       resultsContainer.innerHTML = `<div class="p-4 bg-red-50 text-red-700 text-xs rounded-lg">${data.error || 'Execution failed'}</div>`;
@@ -419,8 +439,7 @@ async function loadCatalog() {
   const genre = document.getElementById('catalog-genre-filter')?.value || 'all';
 
   try {
-    const res = await fetch(`${API_BASE}/books?search=${encodeURIComponent(search)}&genre=${encodeURIComponent(genre)}`);
-    const data = await res.json();
+    const data = await apiCall(`${API_BASE}/books?search=${encodeURIComponent(search)}&genre=${encodeURIComponent(genre)}`);
     booksList = data.books || [];
 
     let cardsHtml = '';
@@ -484,12 +503,11 @@ function closeBorrowModal() {
 async function submitBorrow() {
   const usn = document.getElementById('borrow-student-select').value;
   try {
-    const res = await fetch(`${API_BASE}/library/borrow`, {
+    const data = await apiCall(`${API_BASE}/library/borrow`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usn, bookId: activeModalBookId })
     });
-    const data = await res.json();
     alert(data.message || (data.success ? 'Book Borrowed!' : 'Error'));
     closeBorrowModal();
     await loadCatalog();
@@ -515,12 +533,11 @@ async function submitRating() {
   const review = document.getElementById('rate-review').value;
 
   try {
-    const res = await fetch(`${API_BASE}/library/rate`, {
+    const data = await apiCall(`${API_BASE}/library/rate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usn, bookId: activeModalBookId, stars, review })
     });
-    const data = await res.json();
     alert(data.message || 'Rating submitted!');
     closeRateModal();
     await loadCatalog();
@@ -536,13 +553,10 @@ async function loadAnalytics() {
   if (!container) return;
 
   try {
-    const res = await fetch(`${API_BASE}/analytics/insights`);
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.success) {
-        renderAnalyticsData(data);
-        return;
-      }
+    const data = await apiCall(`${API_BASE}/analytics/insights`);
+    if (data && data.success) {
+      renderAnalyticsData(data);
+      return;
     }
     // Fallback calculation if response is not ok
     renderAnalyticsFallback();
@@ -730,12 +744,11 @@ async function returnActiveLoan(usn, bookId, bookTitle) {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/library/return`, {
+    const data = await apiCall(`${API_BASE}/library/return`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ usn, bookId })
     });
-    const data = await res.json();
     alert(data.message || 'Book returned successfully!');
     await loadAnalytics();
     await loadCatalog();
