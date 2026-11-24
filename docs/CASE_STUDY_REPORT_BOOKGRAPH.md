@@ -170,37 +170,105 @@ Relational library management systems suffer from four distinct architectural dr
 
 ## **4. Graph Data Modeling & Schema Design**
 
-### **Node Types (Labels & Properties)**
-1. **`Student`**:
-   - `usn: String` (Unique Identifier, Primary Key, e.g., `'1MS24CS075'`)
-   - `name: String`, `branch: String`, `sem: Integer`, `email: String`
-2. **`Book`**:
-   - `id: String` (Unique Identifier, Primary Key, e.g., `'BK01'`)
-   - `title: String`, `year: Integer`, `isbn: String`, `pages: Integer`
-3. **`Author`**:
-   - `id: String` (Unique Identifier, Primary Key, e.g., `'AUT03'`)
-   - `name: String`, `country: String`
-4. **`Genre`**:
-   - `id: String` (Unique Identifier, Primary Key, e.g., `'GEN02'`)
-   - `name: String`, `shelf: String`
+### **4.1 Conceptual Data Model: Entity-Relationship (E-R) Diagram**
+Prior to translating the library domain into a graph model, the conceptual data architecture was formulated using standard Entity-Relationship (E-R) modeling (Chen notation). The domain comprises four core entities: **STUDENT**, **BOOK**, **AUTHOR**, and **GENRE**.
 
-### **Relationship Types & Edge Properties**
-- `(:Student)-[:BORROWED {borrow_date: String, return_date: String, status: String}]->(:Book)`
-- `(:Student)-[:RATED {stars: Integer, review: String}]->(:Book)`
-- `(:Book)-[:WRITTEN_BY]->(:Author)`
-- `(:Book)-[:BELONGS_TO]->(:Genre)`
+Circulation and reader feedback are captured through two many-to-many ($M:N$) relationships with descriptive relationship attributes:
+- **`BORROWED`** ($M:N$ between `STUDENT` and `BOOK`): captures circulation history with attributes `borrow_date` (String/Date), `return_date` (String/Date), and `status` (`'ACTIVE'` | `'RETURNED'`).
+- **`RATED`** ($M:N$ between `STUDENT` and `BOOK`): captures student evaluations with attributes `stars` (Integer, 1 to 5) and `review` (String commentary).
+
+Catalog taxonomy is represented via:
+- **`WRITTEN_BY`** ($N:M$ between `BOOK` and `AUTHOR`): books can have one or more co-authors, and an author writes multiple books.
+- **`BELONGS_TO`** ($N:1$ between `BOOK` and `GENRE`): each book belongs to a distinct genre classification.
+
+```mermaid
+erDiagram
+    STUDENT {
+        string usn PK "1MS24CS075"
+        string name "Kaneesh Kumar"
+        string branch "CSE"
+        int sem "5"
+        string email "kaneesh@rit.edu"
+    }
+
+    BOOK {
+        string id PK "BK01"
+        string title "Designing Data-Intensive Applications"
+        int year "2017"
+        string isbn "978-1449373320"
+        int pages "616"
+    }
+
+    AUTHOR {
+        string id PK "AUT01"
+        string name "Martin Kleppmann"
+        string country "United Kingdom"
+    }
+
+    GENRE {
+        string id PK "GEN01"
+        string name "Distributed Systems"
+        string shelf "A3-04"
+    }
+
+    STUDENT }|..|{ BOOK : "BORROWED {borrow_date, return_date, status}"
+    STUDENT }|..|{ BOOK : "RATED {stars, review}"
+    BOOK }|..|{ AUTHOR : "WRITTEN_BY"
+    BOOK }|..|| GENRE : "BELONGS_TO"
+```
+
+### **4.2 Relational E-R to Labeled Property Graph (LPG) Mapping**
+In relational database systems (RDBMS), $M:N$ relationships necessitate intermediate associative/bridge tables containing foreign keys, requiring multi-table `JOIN` operations at runtime. In Neo4j's Labeled Property Graph (LPG) architecture, join tables are completely eliminated; relationships are first-class directed graph entities storing arbitrary key-value properties with pointer-based index-free adjacency.
+
+| Relational E-R Component | Neo4j Graph Construct | Implementation in BookGraph |
+| :--- | :--- | :--- |
+| **Entity Type** (`STUDENT`, `BOOK`) | **Node Label** | `:Student`, `:Book`, `:Author`, `:Genre` |
+| **Primary Key Attribute** (`USN`, `Book_ID`) | **Unique Constraint** | `REQUIRE s.usn IS UNIQUE`, `REQUIRE b.id IS UNIQUE` |
+| **Descriptive Entity Attribute** | **Node Property** | `title`, `year`, `isbn`, `name`, `branch`, `shelf` |
+| **Relationship Type** (`BELONGS_TO`) | **Directed Relationship (Edge)** | `[:BELONGS_TO]`, `[:WRITTEN_BY]` |
+| **$M:N$ Associative / Join Table** | **Native Graph Relationship** | `[:BORROWED]`, `[:RATED]` (Zero Cartesian joins) |
+| **Relationship Attributes** | **Edge Properties** | `r.borrow_date`, `r.return_date`, `r.status`, `r.stars` |
+
+### **4.3 Node Identification — Labels and Properties**
+
+| Node Label | Key Attributes / Properties | Constraint / Index Type |
+| :--- | :--- | :--- |
+| **`Student`** | `usn` (String), `name` (String), `branch` (String), `sem` (Integer), `email` (String) | `usn IS UNIQUE` (Primary Key), Index on `name` |
+| **`Book`** | `id` (String), `title` (String), `year` (Integer), `isbn` (String), `pages` (Integer) | `id IS UNIQUE` (Primary Key), Index on `title` |
+| **`Author`** | `id` (String), `name` (String), `country` (String) | `id IS UNIQUE` (Primary Key), Index on `name` |
+| **`Genre`** | `id` (String), `name` (String), `shelf` (String) | `id IS UNIQUE` (Primary Key), Index on `name` |
+
+### **4.4 Relationships and Edge Properties**
+
+| Relationship | Source ➔ Target | Edge Properties | Multiplicity |
+| :--- | :--- | :--- | :--- |
+| **`BORROWED`** | `Student` ➔ `Book` | `borrow_date`, `return_date`, `status` | 0..* to 0..* |
+| **`RATED`** | `Student` ➔ `Book` | `stars` (1..5), `review` (String) | 0..* to 0..* |
+| **`WRITTEN_BY`** | `Book` ➔ `Author` | None | 1..* to 1..* |
+| **`BELONGS_TO`** | `Book` ➔ `Genre` | None | 1..* to 1 |
+
+### **4.5 Labeled Property Graph Schema Diagram**
 
 ```
-  ┌──────────────┐     BORROWED / RATED      ┌───────────┐
-  │   Student    │ ────────────────────────► │   Book    │
-  └──────────────┘                           └─────┬─────┘
-                                                   │
-                        ┌──────────────────────────┴──────────────────────────┐
-                        │ WRITTEN_BY                               BELONGS_TO │
-                        ▼                                                     ▼
-                 ┌──────────────┐                                      ┌─────────────┐
-                 │    Author    │                                      │    Genre    │
-                 └──────────────┘                                      └─────────────┘
+ ┌──────────────────────┐         [:BORROWED]         ┌──────────────────────┐
+ │       Student        │ ──────────────────────────► │         Book         │
+ │ ──────────────────── │                             │ ──────────────────── │
+ │ usn: String {Unique} │ ◄────────────────────────── │ id: String {Unique}  │
+ │ name: String         │          [:RATED]           │ title: String        │
+ │ branch: String       │                             │ year: Integer        │
+ │ sem: Integer         │                             │ isbn: String         │
+ └──────────────────────┘                             └──────────┬───────────┘
+                                                                 │
+                                ┌────────────────────────────────┴───────────────────────────────┐
+                                │ [:WRITTEN_BY]                                     [:BELONGS_TO] │
+                                ▼                                                                 ▼
+                     ┌──────────────────────┐                                          ┌──────────────────────┐
+                     │        Author        │                                          │        Genre         │
+                     │ ──────────────────── │                                          │ ──────────────────── │
+                     │ id: String {Unique}  │                                          │ id: String {Unique}  │
+                     │ name: String         │                                          │ name: String         │
+                     │ country: String      │                                          │ shelf: String        │
+                     └──────────────────────┘                                          └──────────────────────┘
 ```
 
 ---

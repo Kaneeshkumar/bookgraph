@@ -107,6 +107,32 @@
       white-space: pre;
     }
 
+    /* Entity-Relationship (E-R) Diagram Styles */
+    .er-svg-container {
+      text-align: center;
+      margin: 4px 0;
+    }
+    .er-svg-container svg {
+      width: 100%;
+      height: auto;
+      max-height: 245px;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .entity { fill: #e8f0fe; stroke: #1a73e8; stroke-width: 2; }
+    .entity-title { font-weight: bold; font-size: 13px; text-anchor: middle; fill: #174ea6; font-family: Arial, sans-serif; }
+    .relationship { fill: #fef7e0; stroke: #f9ab00; stroke-width: 2; }
+    .rel-text { font-size: 10px; font-weight: bold; text-anchor: middle; fill: #b06000; font-family: Arial, sans-serif; }
+    .attribute { fill: #f1f8e9; stroke: #558b2f; stroke-width: 1.2; }
+    .attr-text { font-size: 9.5px; text-anchor: middle; fill: #2e5618; font-family: Arial, sans-serif; }
+    .attr-pk { font-weight: bold; text-decoration: underline; }
+    .rel-attr { fill: #fce4ec; stroke: #c2185b; stroke-width: 1.2; }
+    .rel-attr-text { font-size: 9px; text-anchor: middle; fill: #880e4f; font-family: Arial, sans-serif; }
+    .conn-line { stroke: #555; stroke-width: 1.2; }
+    .card-label { font-size: 11px; font-weight: bold; fill: #d32f2f; font-family: Arial, sans-serif; }
+    .fig-caption { text-align: center; font-size: 10pt; font-style: italic; margin-top: 5px; margin-bottom: 10px; color: #333; }
+
     /* Cover Page Specific Styles */
     .cover-page {
       height: 100%;
@@ -434,52 +460,52 @@
         <tr>
           <td class="text-center">3.</td>
           <td style="padding-left: 15px;"><strong>Objectives, Problem Statement and Team Contribution</strong></td>
-          <td class="text-center">8</td>
+          <td class="text-center">7</td>
         </tr>
         <tr>
           <td class="text-center">4.</td>
-          <td style="padding-left: 15px;"><strong>Graph Data Modeling & Schema Design – Unit I</strong></td>
-          <td class="text-center">9</td>
+          <td style="padding-left: 15px;"><strong>Graph Data Modeling &amp; Schema Design – Unit I</strong></td>
+          <td class="text-center">8</td>
         </tr>
         <tr>
           <td class="text-center">5.</td>
           <td style="padding-left: 15px;"><strong>System Architecture and Graph Traversals – Unit II</strong></td>
-          <td class="text-center">11</td>
+          <td class="text-center">10</td>
         </tr>
         <tr>
           <td class="text-center">6.</td>
-          <td style="padding-left: 15px;"><strong>Recommendation Algorithms & Cypher Queries – Unit III</strong></td>
-          <td class="text-center">13</td>
+          <td style="padding-left: 15px;"><strong>Recommendation Algorithms &amp; Cypher Queries – Unit III</strong></td>
+          <td class="text-center">11</td>
         </tr>
         <tr>
           <td class="text-center">7.</td>
           <td style="padding-left: 15px;"><strong>Implementation – Tools, Code Mapping, and Key Algorithms</strong></td>
-          <td class="text-center">15</td>
+          <td class="text-center">12</td>
         </tr>
         <tr>
           <td class="text-center">8.</td>
           <td style="padding-left: 15px;"><strong>Results and Design Evaluation</strong></td>
-          <td class="text-center">17</td>
+          <td class="text-center">13</td>
         </tr>
         <tr>
           <td class="text-center">9.</td>
-          <td style="padding-left: 15px;"><strong>Discussion of Results & Trade-Offs</strong></td>
-          <td class="text-center">19</td>
+          <td style="padding-left: 15px;"><strong>Discussion of Results &amp; Trade-Offs</strong></td>
+          <td class="text-center">14</td>
         </tr>
         <tr>
           <td class="text-center">10.</td>
           <td style="padding-left: 15px;"><strong>Conclusion and Future Work</strong></td>
-          <td class="text-center">20</td>
+          <td class="text-center">14</td>
         </tr>
         <tr>
           <td class="text-center">11.</td>
           <td style="padding-left: 15px;"><strong>References</strong></td>
-          <td class="text-center">21</td>
+          <td class="text-center">14</td>
         </tr>
         <tr>
           <td class="text-center">12.</td>
-          <td style="padding-left: 15px;"><strong>Appendix – Directory Structure & How to Compile and Run</strong></td>
-          <td class="text-center">22</td>
+          <td style="padding-left: 15px;"><strong>Appendix – Directory Structure &amp; How to Compile and Run</strong></td>
+          <td class="text-center">14</td>
         </tr>
       </tbody>
     </table>
@@ -601,83 +627,317 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 8: GRAPH DATA MODELING -->
+  <!-- PAGE 8: ENTITY-RELATIONSHIP (E-R) DIAGRAM & CONCEPTUAL DESIGN -->
   <!-- ========================================================================= -->
   <div class="page-break">
     <h2>4. Graph Data Modeling & Schema Design – Unit I</h2>
-    <h3>Node Identification — Labels and Properties</h3>
-    <table>
+
+    <h3>4.1 Conceptual Data Model: Entity-Relationship (E-R) Diagram</h3>
+    <p style="margin-bottom: 6px;">
+      Prior to translating the library domain into a graph model, the conceptual data architecture was formulated using standard Entity-Relationship (E-R) modeling. As illustrated in <strong>Figure 4.1</strong>, the system comprises four core entities (<strong>STUDENT</strong>, <strong>BOOK</strong>, <strong>AUTHOR</strong>, <strong>GENRE</strong>), two $M:N$ circulation relationships (<strong>BORROWED</strong> and <strong>RATED</strong> with descriptive edge attributes), a $1:N$ <strong>BELONGS_TO</strong> classification, and an $N:M$ <strong>WRITTEN_BY</strong> authorship relation.
+    </p>
+
+    <div class="er-svg-container">
+      <svg viewBox="0 0 720 440">
+        <defs>
+          <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+            <feDropShadow dx="1" dy="1" stdDeviation="1.5" flood-opacity="0.15"/>
+          </filter>
+        </defs>
+
+        <!-- Connecting Lines -->
+        <!-- Student Attributes -->
+        <line x1="85" y1="150" x2="45" y2="92" class="conn-line"/>
+        <line x1="105" y1="150" x2="115" y2="92" class="conn-line"/>
+        <line x1="60" y1="200" x2="35" y2="245" class="conn-line"/>
+        <line x1="90" y1="200" x2="85" y2="260" class="conn-line"/>
+        <line x1="120" y1="200" x2="140" y2="260" class="conn-line"/>
+
+        <!-- Student to BORROWED -->
+        <line x1="155" y1="165" x2="225" y2="125" class="conn-line"/>
+        <!-- BORROWED to Book -->
+        <line x1="285" y1="125" x2="375" y2="165" class="conn-line"/>
+
+        <!-- BORROWED Attributes -->
+        <line x1="255" y1="105" x2="205" y2="55" class="conn-line"/>
+        <line x1="255" y1="105" x2="255" y2="40" class="conn-line"/>
+        <line x1="255" y1="105" x2="305" y2="55" class="conn-line"/>
+
+        <!-- Student to RATED -->
+        <line x1="155" y1="185" x2="225" y2="225" class="conn-line"/>
+        <!-- RATED to Book -->
+        <line x1="285" y1="225" x2="375" y2="185" class="conn-line"/>
+
+        <!-- RATED Attributes -->
+        <line x1="255" y1="245" x2="225" y2="285" class="conn-line"/>
+        <line x1="255" y1="245" x2="285" y2="285" class="conn-line"/>
+
+        <!-- Book Attributes -->
+        <line x1="410" y1="150" x2="385" y2="92" class="conn-line"/>
+        <line x1="435" y1="150" x2="445" y2="92" class="conn-line"/>
+        <line x1="475" y1="150" x2="505" y2="92" class="conn-line"/>
+        <line x1="500" y1="165" x2="555" y2="140" class="conn-line"/>
+        <line x1="500" y1="185" x2="555" y2="185" class="conn-line"/>
+
+        <!-- Book to BELONGS_TO -->
+        <line x1="435" y1="200" x2="435" y2="240" class="conn-line"/>
+        <!-- BELONGS_TO to Genre -->
+        <line x1="435" y1="290" x2="435" y2="335" class="conn-line"/>
+
+        <!-- Genre Attributes -->
+        <line x1="400" y1="380" x2="370" y2="420" class="conn-line"/>
+        <line x1="435" y1="380" x2="435" y2="420" class="conn-line"/>
+        <line x1="470" y1="380" x2="500" y2="420" class="conn-line"/>
+
+        <!-- Book to WRITTEN_BY -->
+        <line x1="480" y1="200" x2="555" y2="245" class="conn-line"/>
+        <!-- WRITTEN_BY to Author -->
+        <line x1="605" y1="265" x2="620" y2="335" class="conn-line"/>
+
+        <!-- Author Attributes -->
+        <line x1="590" y1="380" x2="565" y2="420" class="conn-line"/>
+        <line x1="620" y1="380" x2="620" y2="420" class="conn-line"/>
+        <line x1="655" y1="380" x2="675" y2="420" class="conn-line"/>
+
+        <!-- Entity Rectangles -->
+        <rect x="35" y="150" width="120" height="50" rx="4" class="entity" filter="url(#shadow)"/>
+        <text x="95" y="180" class="entity-title">STUDENT</text>
+
+        <rect x="375" y="150" width="125" height="50" rx="4" class="entity" filter="url(#shadow)"/>
+        <text x="437" y="180" class="entity-title">BOOK</text>
+
+        <rect x="375" y="335" width="120" height="45" rx="4" class="entity" filter="url(#shadow)"/>
+        <text x="435" y="363" class="entity-title">GENRE</text>
+
+        <rect x="560" y="335" width="120" height="45" rx="4" class="entity" filter="url(#shadow)"/>
+        <text x="620" y="363" class="entity-title">AUTHOR</text>
+
+        <!-- Relationship Diamonds -->
+        <polygon points="255,100 295,125 255,150 215,125" class="relationship" filter="url(#shadow)"/>
+        <text x="255" y="129" class="rel-text">BORROWED</text>
+
+        <polygon points="255,200 295,225 255,250 215,225" class="relationship" filter="url(#shadow)"/>
+        <text x="255" y="229" class="rel-text">RATED</text>
+
+        <polygon points="435,240 480,265 435,290 390,265" class="relationship" filter="url(#shadow)"/>
+        <text x="435" y="269" class="rel-text">BELONGS_TO</text>
+
+        <polygon points="585,220 635,245 585,270 535,245" class="relationship" filter="url(#shadow)"/>
+        <text x="585" y="249" class="rel-text">WRITTEN_BY</text>
+
+        <!-- Cardinality Labels -->
+        <text x="170" y="145" class="card-label">M</text>
+        <text x="350" y="145" class="card-label">N</text>
+
+        <text x="170" y="215" class="card-label">M</text>
+        <text x="350" y="215" class="card-label">N</text>
+
+        <text x="445" y="220" class="card-label">N</text>
+        <text x="445" y="315" class="card-label">1</text>
+
+        <text x="505" y="235" class="card-label">N</text>
+        <text x="620" y="315" class="card-label">M</text>
+
+        <!-- Student Attributes -->
+        <ellipse cx="45" cy="80" rx="30" ry="14" class="attribute"/>
+        <text x="45" y="84" class="attr-text attr-pk">USN</text>
+
+        <ellipse cx="115" cy="80" rx="28" ry="14" class="attribute"/>
+        <text x="115" y="84" class="attr-text">Name</text>
+
+        <ellipse cx="35" cy="255" rx="26" ry="13" class="attribute"/>
+        <text x="35" y="259" class="attr-text">Branch</text>
+
+        <ellipse cx="85" cy="272" rx="22" ry="13" class="attribute"/>
+        <text x="85" y="276" class="attr-text">Sem</text>
+
+        <ellipse cx="140" cy="272" rx="26" ry="13" class="attribute"/>
+        <text x="140" y="276" class="attr-text">Email</text>
+
+        <!-- Book Attributes -->
+        <ellipse cx="385" cy="80" rx="28" ry="14" class="attribute"/>
+        <text x="385" y="84" class="attr-text attr-pk">Book_ID</text>
+
+        <ellipse cx="445" cy="80" rx="26" ry="14" class="attribute"/>
+        <text x="445" y="84" class="attr-text">Title</text>
+
+        <ellipse cx="505" cy="80" rx="24" ry="14" class="attribute"/>
+        <text x="505" y="84" class="attr-text">ISBN</text>
+
+        <ellipse cx="560" cy="135" rx="24" ry="13" class="attribute"/>
+        <text x="560" y="139" class="attr-text">Year</text>
+
+        <ellipse cx="560" cy="185" rx="24" ry="13" class="attribute"/>
+        <text x="560" y="189" class="attr-text">Pages</text>
+
+        <!-- Genre Attributes -->
+        <ellipse cx="365" cy="430" rx="28" ry="14" class="attribute"/>
+        <text x="365" y="434" class="attr-text attr-pk">Genre_ID</text>
+
+        <ellipse cx="435" cy="430" rx="26" ry="14" class="attribute"/>
+        <text x="435" y="434" class="attr-text">Name</text>
+
+        <ellipse cx="505" cy="430" rx="24" ry="14" class="attribute"/>
+        <text x="505" y="434" class="attr-text">Shelf</text>
+
+        <!-- Author Attributes -->
+        <ellipse cx="560" cy="430" rx="28" ry="14" class="attribute"/>
+        <text x="560" y="434" class="attr-text attr-pk">Author_ID</text>
+
+        <ellipse cx="620" cy="430" rx="26" ry="14" class="attribute"/>
+        <text x="620" y="434" class="attr-text">Name</text>
+
+        <ellipse cx="680" cy="430" rx="28" ry="14" class="attribute"/>
+        <text x="680" y="434" class="attr-text">Country</text>
+
+        <!-- BORROWED Relationship Attributes -->
+        <ellipse cx="195" cy="45" rx="34" ry="13" class="rel-attr"/>
+        <text x="195" y="49" class="rel-attr-text">borrow_date</text>
+
+        <ellipse cx="255" cy="30" rx="32" ry="13" class="rel-attr"/>
+        <text x="255" y="34" class="rel-attr-text">return_date</text>
+
+        <ellipse cx="315" cy="45" rx="24" ry="13" class="rel-attr"/>
+        <text x="315" y="49" class="rel-attr-text">status</text>
+
+        <!-- RATED Relationship Attributes -->
+        <ellipse cx="215" cy="295" rx="22" ry="13" class="rel-attr"/>
+        <text x="215" y="299" class="rel-attr-text">stars</text>
+
+        <ellipse cx="285" cy="295" rx="25" ry="13" class="rel-attr"/>
+        <text x="285" y="299" class="rel-attr-text">review</text>
+      </svg>
+    </div>
+    <div class="fig-caption" style="margin-top: 3px; margin-bottom: 5px;">Figure 4.1: Conceptual Entity-Relationship (E-R) Diagram of the Library System</div>
+
+    <h3 style="margin-top: 8px; margin-bottom: 4px;">4.2 Relational E-R to Labeled Property Graph (LPG) Mapping</h3>
+    <p style="margin-bottom: 5px;">
+      In relational databases (RDBMS), $M:N$ relationships require associative/bridge tables containing foreign keys. In Neo4j's Labeled Property Graph model, bridge tables are completely eliminated; relationships are stored as direct pointer-based edges with native properties, enabling index-free adjacency traversals.
+    </p>
+
+    <table style="margin: 3px 0 6px 0; font-size: 9pt;">
       <thead>
         <tr>
-          <th>Node Label</th>
-          <th>Key Attributes / Properties</th>
-          <th>Constraint / Index Type</th>
+          <th style="width: 30%; padding: 3px 6px;">Relational E-R Component</th>
+          <th style="width: 32%; padding: 3px 6px;">Neo4j Graph Construct</th>
+          <th style="width: 38%; padding: 3px 6px;">Implementation in BookGraph</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Student</strong></td>
-          <td><code>usn</code> (String), <code>name</code> (String), <code>branch</code> (String), <code>sem</code> (int), <code>email</code> (String)</td>
-          <td><code>usn IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
+          <td style="padding: 3px 6px;"><strong>Entity Type</strong> (STUDENT, BOOK)</td>
+          <td style="padding: 3px 6px;"><strong>Node Label</strong></td>
+          <td style="padding: 3px 6px;"><code>:Student</code>, <code>:Book</code>, <code>:Author</code>, <code>:Genre</code></td>
         </tr>
         <tr>
-          <td><strong>Book</strong></td>
-          <td><code>id</code> (String), <code>title</code> (String), <code>year</code> (int), <code>isbn</code> (String), <code>pages</code> (int)</td>
-          <td><code>id IS UNIQUE</code> (Primary Key), Index on <code>title</code></td>
+          <td style="padding: 3px 6px;"><strong>Primary Key Attribute</strong></td>
+          <td style="padding: 3px 6px;"><strong>Unique Constraint</strong></td>
+          <td style="padding: 3px 6px;"><code>REQUIRE s.usn IS UNIQUE</code>, <code>REQUIRE b.id IS UNIQUE</code></td>
         </tr>
         <tr>
-          <td><strong>Author</strong></td>
-          <td><code>id</code> (String), <code>name</code> (String), <code>country</code> (String)</td>
-          <td><code>id IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
+          <td style="padding: 3px 6px;"><strong>Descriptive Entity Attribute</strong></td>
+          <td style="padding: 3px 6px;"><strong>Node Property</strong></td>
+          <td style="padding: 3px 6px;"><code>title</code>, <code>year</code>, <code>isbn</code>, <code>name</code>, <code>branch</code>, <code>shelf</code></td>
         </tr>
         <tr>
-          <td><strong>Genre</strong></td>
-          <td><code>id</code> (String), <code>name</code> (String), <code>shelf</code> (String)</td>
-          <td><code>id IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
+          <td style="padding: 3px 6px;"><strong>Relationship Type</strong> (BELONGS_TO)</td>
+          <td style="padding: 3px 6px;"><strong>Directed Relationship (Edge)</strong></td>
+          <td style="padding: 3px 6px;"><code>[:BELONGS_TO]</code>, <code>[:WRITTEN_BY]</code></td>
+        </tr>
+        <tr>
+          <td style="padding: 3px 6px;"><strong>M:N Join / Associative Table</strong></td>
+          <td style="padding: 3px 6px;"><strong>Native Graph Relationship</strong></td>
+          <td style="padding: 3px 6px;"><code>[:BORROWED]</code>, <code>[:RATED]</code> (Zero Cartesian joins)</td>
+        </tr>
+        <tr>
+          <td style="padding: 3px 6px;"><strong>Relationship Attributes</strong></td>
+          <td style="padding: 3px 6px;"><strong>Edge Properties</strong></td>
+          <td style="padding: 3px 6px;"><code>r.borrow_date</code>, <code>r.return_date</code>, <code>r.status</code>, <code>r.stars</code></td>
         </tr>
       </tbody>
     </table>
+    <div class="page-num">8</div>
+  </div>
 
-    <h3>Relationships and Edge Properties</h3>
-    <table>
+  <!-- ========================================================================= -->
+  <!-- PAGE 9: NODE/EDGE PROPERTIES & LPG SCHEMA DIAGRAM -->
+  <!-- ========================================================================= -->
+  <div class="page-break">
+    <h2>4. Graph Data Modeling & Schema Design (Cont.)</h2>
+
+    <h3 style="margin-top: 8px; margin-bottom: 4px;">4.3 Node Identification — Labels and Properties</h3>
+    <table style="margin: 4px 0 10px 0; font-size: 9.5pt;">
       <thead>
         <tr>
-          <th>Relationship</th>
-          <th>Source ➔ Target</th>
-          <th>Edge Properties</th>
-          <th>Multiplicity</th>
+          <th style="padding: 4px 8px;">Node Label</th>
+          <th style="padding: 4px 8px;">Key Attributes / Properties</th>
+          <th style="padding: 4px 8px;">Constraint / Index Type</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>BORROWED</strong></td>
-          <td>Student ➔ Book</td>
-          <td><code>borrow_date</code>, <code>return_date</code>, <code>status</code></td>
-          <td>0..* to 0..*</td>
+          <td style="padding: 4px 8px;"><strong>Student</strong></td>
+          <td style="padding: 4px 8px;"><code>usn</code> (String), <code>name</code> (String), <code>branch</code> (String), <code>sem</code> (int), <code>email</code> (String)</td>
+          <td style="padding: 4px 8px;"><code>usn IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
         </tr>
         <tr>
-          <td><strong>RATED</strong></td>
-          <td>Student ➔ Book</td>
-          <td><code>stars</code> (1..5), <code>review</code> (String)</td>
-          <td>0..* to 0..*</td>
+          <td style="padding: 4px 8px;"><strong>Book</strong></td>
+          <td style="padding: 4px 8px;"><code>id</code> (String), <code>title</code> (String), <code>year</code> (int), <code>isbn</code> (String), <code>pages</code> (int)</td>
+          <td style="padding: 4px 8px;"><code>id IS UNIQUE</code> (Primary Key), Index on <code>title</code></td>
         </tr>
         <tr>
-          <td><strong>WRITTEN_BY</strong></td>
-          <td>Book ➔ Author</td>
-          <td>None</td>
-          <td>1..* to 1..*</td>
+          <td style="padding: 4px 8px;"><strong>Author</strong></td>
+          <td style="padding: 4px 8px;"><code>id</code> (String), <code>name</code> (String), <code>country</code> (String)</td>
+          <td style="padding: 4px 8px;"><code>id IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
         </tr>
         <tr>
-          <td><strong>BELONGS_TO</strong></td>
-          <td>Book ➔ Genre</td>
-          <td>None</td>
-          <td>1..* to 1</td>
+          <td style="padding: 4px 8px;"><strong>Genre</strong></td>
+          <td style="padding: 4px 8px;"><code>id</code> (String), <code>name</code> (String), <code>shelf</code> (String)</td>
+          <td style="padding: 4px 8px;"><code>id IS UNIQUE</code> (Primary Key), Index on <code>name</code></td>
         </tr>
       </tbody>
     </table>
 
-    <h3>Graph Schema Diagram</h3>
-    <div class="diagram-box">
+    <h3 style="margin-top: 8px; margin-bottom: 4px;">4.4 Relationships and Edge Properties</h3>
+    <table style="margin: 4px 0 10px 0; font-size: 9.5pt;">
+      <thead>
+        <tr>
+          <th style="padding: 4px 8px;">Relationship</th>
+          <th style="padding: 4px 8px;">Source ➔ Target</th>
+          <th style="padding: 4px 8px;">Edge Properties</th>
+          <th style="padding: 4px 8px;">Multiplicity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 4px 8px;"><strong>BORROWED</strong></td>
+          <td style="padding: 4px 8px;">Student ➔ Book</td>
+          <td style="padding: 4px 8px;"><code>borrow_date</code>, <code>return_date</code>, <code>status</code></td>
+          <td style="padding: 4px 8px;">0..* to 0..*</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px;"><strong>RATED</strong></td>
+          <td style="padding: 4px 8px;">Student ➔ Book</td>
+          <td style="padding: 4px 8px;"><code>stars</code> (1..5), <code>review</code> (String)</td>
+          <td style="padding: 4px 8px;">0..* to 0..*</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px;"><strong>WRITTEN_BY</strong></td>
+          <td style="padding: 4px 8px;">Book ➔ Author</td>
+          <td style="padding: 4px 8px;">None</td>
+          <td style="padding: 4px 8px;">1..* to 1..*</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 8px;"><strong>BELONGS_TO</strong></td>
+          <td style="padding: 4px 8px;">Book ➔ Genre</td>
+          <td style="padding: 4px 8px;">None</td>
+          <td style="padding: 4px 8px;">1..* to 1</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 8px; margin-bottom: 4px;">4.5 Labeled Property Graph Schema Diagram</h3>
+    <div class="diagram-box" style="font-size: 8pt; line-height: 1.15; padding: 6px 8px; margin: 4px auto;">
  ┌──────────────────────┐         [:BORROWED]         ┌──────────────────────┐
  │       Student        │ ──────────────────────────► │         Book         │
  │ ──────────────────── │                             │ ──────────────────── │
@@ -687,7 +947,7 @@
  │ sem: Integer         │                             │ isbn: String         │
  └──────────────────────┘                             └──────────┬───────────┘
                                                                  │
-                                ┌────────────────────────────────┴────────────────────────────────┐
+                                ┌────────────────────────────────┴───────────────────────────────┐
                                 │ [:WRITTEN_BY]                                     [:BELONGS_TO] │
                                 ▼                                                                 ▼
                      ┌──────────────────────┐                                          ┌──────────────────────┐
@@ -698,11 +958,12 @@
                      │ country: String      │                                          │ shelf: String        │
                      └──────────────────────┘                                          └──────────────────────┘
     </div>
-    <div class="page-num">8</div>
+    <div class="fig-caption" style="margin-top: 4px; margin-bottom: 6px;">Figure 4.2: BookGraph Labeled Property Graph Schema</div>
+    <div class="page-num">9</div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 9: SYSTEM ARCHITECTURE -->
+  <!-- PAGE 10: SYSTEM ARCHITECTURE -->
   <!-- ========================================================================= -->
   <div class="page-break">
     <h2>5. System Architecture and Graph Traversals – Unit II</h2>
@@ -739,14 +1000,14 @@
       <li><strong>Hop 3 (Candidate Expansion):</strong> Traverses forward from those peers along outgoing <code>[:BORROWED]</code> edges to find candidate books <code>(rec:Book)</code>.</li>
       <li><strong>Set Difference &amp; Ranking:</strong> Filters out any candidate book that <code>me</code> has already read (<code>WHERE NOT (me)-[:BORROWED]->(rec)</code>) and orders by peer frequency (<code>count(DISTINCT peer) DESC</code>).</li>
     </ol>
-    <div class="page-num">9</div>
+    <div class="page-num">10</div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 10: CYPHER QUERIES -->
+  <!-- PAGE 11: CYPHER QUERIES -->
   <!-- ========================================================================= -->
   <div class="page-break">
-    <h2>6. Recommendation Algorithms & Cypher Queries – Unit III</h2>
+    <h2>6. Recommendation Algorithms &amp; Cypher Queries – Unit III</h2>
 
     <h3>6.1 Collaborative Filtering Query</h3>
     <pre>MATCH (me:Student {usn: $usn})-[:BORROWED]->(shared:Book)&lt;-[:BORROWED]-(peer:Student)
@@ -791,11 +1052,11 @@ RETURN [node IN nodes(p) | coalesce(node.title, node.name)] AS PathSequence,
     <pre>MATCH (s:Student {usn: $usn}), (b:Book {id: $bookId})
 CREATE (s)-[r:BORROWED {borrow_date: $today, return_date: $dueDate, status: 'ACTIVE'}]->(b)
 RETURN r;</pre>
-    <div class="page-num">10</div>
+    <div class="page-num">11</div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 11: IMPLEMENTATION & CODE MAPPING -->
+  <!-- PAGE 12: IMPLEMENTATION & CODE MAPPING -->
   <!-- ========================================================================= -->
   <div class="page-break">
     <h2>7. Implementation – Tools, Code Mapping, and Key Algorithms</h2>
@@ -883,11 +1144,11 @@ RETURN r;</pre>
         </tr>
       </tbody>
     </table>
-    <div class="page-num">11</div>
+    <div class="page-num">12</div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 12: RESULTS & DESIGN EVALUATION -->
+  <!-- PAGE 13: RESULTS & DESIGN EVALUATION -->
   <!-- ========================================================================= -->
   <div class="page-break">
     <h2>8. Results and Design Evaluation</h2>
@@ -1007,14 +1268,14 @@ RETURN r;</pre>
         </tr>
       </tbody>
     </table>
-    <div class="page-num">12</div>
+    <div class="page-num">13</div>
   </div>
 
   <!-- ========================================================================= -->
-  <!-- PAGE 13: DISCUSSION, CONCLUSION & REFERENCES -->
+  <!-- PAGE 14: DISCUSSION, CONCLUSION & REFERENCES -->
   <!-- ========================================================================= -->
   <div class="page-break" style="font-size: 11.5pt;">
-    <h2 style="margin-top: 10px; margin-bottom: 6px;">9. Discussion of Results & Trade-Offs</h2>
+    <h2 style="margin-top: 10px; margin-bottom: 6px;">9. Discussion of Results &amp; Trade-Offs</h2>
     <p style="margin-bottom: 6px;">
       The implementation confirms that modeling institutional library records as a graph eliminates the latency and complexity of relational joins. In the original relational design, recommending books based on reader circles required querying three tables (Students, Issues, Books) with multiple join predicates. In Neo4j, Cypher pattern matching concisely captures this intent in a single declarative expression.
     </p>
@@ -1047,7 +1308,7 @@ RETURN r;</pre>
 -- Output: 🚀 Server running at: http://localhost:3000
 -- Features: 📊 Graph Visualizer (/ #graph) | 💡 Recommendations (/ #recommend)
 --           ⚡ Cypher Query Lab (/ #cypher) | 📈 Network Analytics (/ #analytics)</pre>
-    <div class="page-num" style="margin-top: 15px;">13</div>
+    <div class="page-num" style="margin-top: 15px;">14</div>
   </div>
 
 </body>
