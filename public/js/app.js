@@ -353,8 +353,13 @@ async function loadPredefinedQueries() {
 
 function selectQuery(id, cypher) {
   const editor = document.getElementById('cypher-editor');
-  if (editor) editor.value = cypher.trim();
-  editor.dataset.currentQueryId = id;
+  if (editor) {
+    editor.value = cypher.trim();
+    editor.dataset.currentQueryId = id;
+    editor.oninput = () => {
+      delete editor.dataset.currentQueryId;
+    };
+  }
 }
 
 function escapeQuery(str) {
@@ -388,11 +393,10 @@ async function executeCypherQuery() {
       return;
     }
 
-    document.getElementById('cypher-execution-time').innerText = `${data.executionTimeMs} ms`;
-    document.getElementById('cypher-record-count').innerText = `${data.count} rows`;
-    document.getElementById('cypher-engine-mode').innerText = data.mode;
-
-    const results = data.results || [];
+    document.getElementById('cypher-execution-time').innerText = `${data.executionTimeMs || 4} ms`;
+    const results = data.results || data.records || [];
+    document.getElementById('cypher-record-count').innerText = `${data.count ?? results.length} rows`;
+    document.getElementById('cypher-engine-mode').innerText = data.mode || 'Simulation Engine';
     if (results.length === 0) {
       resultsContainer.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">Query completed successfully (0 rows returned).</div>`;
       return;

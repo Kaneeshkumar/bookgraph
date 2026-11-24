@@ -159,6 +159,77 @@ async function runCypher(req, res) {
         })
         .sort((a, b) => b.BorrowCount - a.BorrowCount)
         .slice(0, 5);
+    } else if (queryId === 'collaborative-rec' || cypherToRun.includes('shared:Book')) {
+      const targetUsn = '1MS24CS075';
+      const myBooks = new Set(mockData.borrowed.filter(b => b.studentUsn === targetUsn).map(b => b.bookId));
+      const peerCand = {};
+      mockData.borrowed.forEach(b => {
+        if (b.studentUsn !== targetUsn && myBooks.has(b.bookId)) {
+          const peer = mockData.students.find(s => s.usn === b.studentUsn);
+          const peerName = peer ? peer.name : b.studentUsn;
+          mockData.borrowed.filter(pB => pB.studentUsn === b.studentUsn && !myBooks.has(pB.bookId)).forEach(cand => {
+            if (!peerCand[cand.bookId]) peerCand[cand.bookId] = { count: 0, peers: new Set() };
+            peerCand[cand.bookId].count++;
+            peerCand[cand.bookId].peers.add(peerName);
+          });
+        }
+      });
+      results = Object.entries(peerCand)
+        .map(([bId, d]) => {
+          const b = mockData.books.find(x => x.id === bId);
+          const aList = mockData.authors.filter(a => b?.authorIds?.includes(a.id)).map(a => a.name);
+          const g = mockData.genres.find(g => g.id === b?.genreId)?.name;
+          return {
+            BookID: bId,
+            Title: b?.title || bId,
+            Authors: aList,
+            Genre: g,
+            PeerScore: d.count,
+            RecommendedByStudents: Array.from(d.peers)
+          };
+        })
+        .sort((a, b) => b.PeerScore - a.PeerScore)
+        .slice(0, 5);
+      if (results.length === 0) {
+        results = [
+          { BookID: 'BK03', Title: 'Clean Architecture', Authors: ['Robert C. Martin'], Genre: 'Software Architecture & Design', PeerScore: 3, RecommendedByStudents: ['Karan Mehta', 'Tanvi Hegde'] },
+          { BookID: 'BK24', Title: 'Distributed Systems: Principles and Paradigms', Authors: ['Andrew S. Tanenbaum'], Genre: 'Database & Distributed Systems', PeerScore: 2, RecommendedByStudents: ['Karan Mehta', 'Mohammed Zaid'] }
+        ];
+      }
+    } else if (queryId === 'content-genre' || cypherToRun.includes('genreScore') || cypherToRun.includes('GenreAffinityScore')) {
+      const targetUsn = '1MS24CS075';
+      const myBorrows = mockData.borrowed.filter(b => b.studentUsn === targetUsn);
+      const myBookIds = new Set(myBorrows.map(b => b.bookId));
+      const genreFreq = {};
+      myBorrows.forEach(b => {
+        const bk = mockData.books.find(x => x.id === b.bookId);
+        if (bk) genreFreq[bk.genreId] = (genreFreq[bk.genreId] || 0) + 1;
+      });
+      const topGenres = Object.entries(genreFreq).sort((a, b) => b[1] - a[1]).slice(0, 2).map(x => x[0]);
+      results = mockData.books
+        .filter(b => topGenres.includes(b.genreId) && !myBookIds.has(b.id))
+        .map(b => ({
+          BookID: b.id,
+          Title: b.title,
+          Genre: mockData.genres.find(g => g.id === b.genreId)?.name,
+          Authors: mockData.authors.filter(a => b.authorIds?.includes(a.id)).map(a => a.name),
+          GenreAffinityScore: genreFreq[b.genreId] || 1
+        }))
+        .sort((a, b) => b.GenreAffinityScore - a.GenreAffinityScore)
+        .slice(0, 5);
+    } else if (queryId === 'shortest-path' || cypherToRun.includes('shortestPath')) {
+      results = [
+        {
+          PathSequence: [
+            'Aarav Sharma (1MS24CS075)',
+            'Designing Data-Intensive Applications [BK01]',
+            'Karan Mehta (1MS24CS080)',
+            'Artificial Intelligence: A Modern Approach [BK05]',
+            'Sneha Patel (1MS24CS112)'
+          ],
+          DegreeDistance: 4
+        }
+      ];
     } else if (queryId === 'active-borrowers' || cypherToRun.includes('TotalBooksBorrowed')) {
       const counts = {};
       mockData.borrowed.forEach(b => {
@@ -171,7 +242,7 @@ async function runCypher(req, res) {
         })
         .sort((a, b) => b.TotalBooksBorrowed - a.TotalBooksBorrowed)
         .slice(0, 5);
-    } else if (queryId === 'books-by-student' || cypherToRun.includes('1MS24CS075')) {
+    } else if (queryId === 'books-by-student' || (cypherToRun.includes('1MS24CS075') && cypherToRun.includes('Status'))) {
       results = mockData.borrowed
         .filter(b => b.studentUsn === '1MS24CS075')
         .map(brw => {
@@ -187,27 +258,29 @@ async function runCypher(req, res) {
             Status: brw.status
           };
         });
-    } else if (queryId === 'shortest-path' || cypherToRun.includes('shortestPath')) {
-      results = [
-        {
-          PathSequence: [
-            'Aarav Sharma',
-            'Designing Data-Intensive Applications',
-            'Karan Mehta',
-            'Artificial Intelligence: A Modern Approach',
-            'Sneha Patel'
-          ],
-          DegreeDistance: 4
-        }
-      ];
     } else {
-      // Default sample result
-      results = mockData.books.slice(0, 5).map(b => ({
-        BookID: b.id,
-        Title: b.title,
-        Year: b.year,
-        Genre: mockData.genres.find(g => g.id === b.genreId)?.name
-      }));
+      // Dynamic interpretation of custom query
+      const qUpper = cypherToRun.toUpperCase();
+      if (qUpper.includes(':STUDENT') || qUpper.includes('STUDENT')) {
+        results = mockData.students.slice(0, 6).map(s => ({ USN: s.usn, Name: s.name, Branch: s.branch, Sem: s.sem, Email: s.email }));
+      } else if (qUpper.includes(':AUTHOR') || qUpper.includes('AUTHOR')) {
+        results = mockData.authors.slice(0, 6).map(a => ({ AuthorID: a.id, Name: a.name, Country: a.country }));
+      } else if (qUpper.includes(':GENRE') || qUpper.includes('GENRE')) {
+        results = mockData.genres.map(g => ({ GenreID: g.id, Name: g.name, ShelfLocation: g.shelf }));
+      } else if (qUpper.includes('RATED') || qUpper.includes('STARS')) {
+        results = (mockData.rated || []).slice(0, 6).map(r => {
+          const bk = mockData.books.find(b => b.id === r.bookId);
+          return { StudentUSN: r.studentUsn, BookTitle: bk?.title || r.bookId, Stars: r.stars, Review: r.review };
+        });
+      } else {
+        results = mockData.books.slice(0, 6).map(b => ({
+          BookID: b.id,
+          Title: b.title,
+          Year: b.year,
+          Genre: mockData.genres.find(g => g.id === b.genreId)?.name,
+          Authors: mockData.authors.filter(a => b.authorIds?.includes(a.id)).map(a => a.name)
+        }));
+      }
     }
 
     const executionTimeMs = Date.now() - startTime + 8;
@@ -216,7 +289,8 @@ async function runCypher(req, res) {
       mode: 'SIMULATION_MODE',
       executionTimeMs,
       count: results.length,
-      results
+      results,
+      records: results
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
